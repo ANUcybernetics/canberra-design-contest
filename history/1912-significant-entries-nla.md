@@ -13,7 +13,7 @@ source: https://catalogue.nla.gov.au/
 > The records were found by searching the catalogue for the phrase "Competitor no." and for each designer's surname, on 13 November 2026.
 > Spelling follows the catalogue, which follows the 1912 report in writing "Schanfelberg" for the London firm.
 
-The Board's report and the Minister's decision are transcribed in [1912-federal-capital-designs-board-report.md](1912-federal-capital-designs-board-report.md).
+The Board's report and the Minister's decision are transcribed in [1912-federal-capital-designs-board-report.md](transcriptions/1912-federal-capital-designs-board-report.md).
 The plate numbers below refer to that report.
 
 ## At a glance

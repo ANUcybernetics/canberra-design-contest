@@ -16,9 +16,8 @@ Thumbs.db
 CLAUDE.local.md
 
 # Source scans (large binaries; see history/README.md for links)
-history/*.tif
-history/*.zip
-history/*.jpg
+history/scans/
+history/curtis/photos/
 
 # Python
 __pycache__/
