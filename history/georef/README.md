@@ -59,7 +59,7 @@ To run it all:
 ```sh
 cd history/georef
 uv sync
-uv run python extract_sheets.py ../../nla.obj-232175445.zip
+uv run python extract_sheets.py   # finds ../scans/1910-contour-survey/nla.obj-232175445.zip
 uv run python detect_grid.py
 uv run python locate_stations.py
 uv run python fit_and_warp.py
