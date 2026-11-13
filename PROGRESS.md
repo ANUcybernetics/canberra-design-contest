@@ -13,6 +13,7 @@
 
 ## Next
 
+- Next NLA visit: get and scan the items in `history/nla-visit-list.md`, starting with Bérard's streets plan and Gimson's plan.
 - Find the inside pages of the 1911 conditions booklet.
 - Consider evening out the paper tone between the four sheets in the composite.
 - Georeference Saarinen's "central area" sheet and Agache's public-buildings photograph with hand-picked control points (no grid; automatic matching failed).
