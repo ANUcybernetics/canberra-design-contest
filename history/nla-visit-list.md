@@ -47,7 +47,7 @@ Most are 1912 photographs of the original drawings, "drawn on base map", so if t
 | ☐ | **Papers of Charles Henry Caswell**, MS 4508 | [1341744](https://catalogue.nla.gov.au/catalog/1341744) | The album "History of the Design no. 10", with a typed history and letters to Coane, O'Malley and Comey. It may also be where our copy of *The Surveyor* came from: check for the clippings and typed letters seen at the edges of the Curtis photographs. |
 | ☐ | **Papers of W. Scott Griffiths**, MS 9519 | [1748068](https://catalogue.nla.gov.au/catalog/1748068) | Clippings, photographs and watercolours from the other No. 10 author. |
 | ☐ | **John W. Reps, *Canberra 1912*** (1997) | [1609610](https://catalogue.nla.gov.au/catalog/1609610) | The standard account. Check it for: Gimson's report, which would let us firm up the No. 15 placement; the total number of entries (137, yet Curtis names Nos. 139 and 140); and the perspectives (plates 6A, 7A, 8A, 9A, 11A) that the Library has not digitised. |
-| ☐ | **The 1911 conditions booklet**, microform | [3541027](https://catalogue.nla.gov.au/catalog/3541027) | All 12 pages. It is already in the online viewer ([nla.obj-3416633692](https://nla.gov.au/nla.obj-3416633692)), so try downloading it before the visit; only scan it if that fails. |
+| ☑ | **The 1911 conditions booklet**, microform | [3541027](https://catalogue.nla.gov.au/catalog/3541027) | No longer needed: the NLA's scan of the printed booklet ([nla.obj-232173779](https://nla.gov.au/nla.obj-232173779)) holds all twelve pages, now [transcribed](transcriptions/1911-information-conditions-and-particulars.md). |
 
 ## Not at the Library
 

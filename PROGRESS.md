@@ -1,5 +1,10 @@
 # Progress
 
+## 2026-11-14
+
+- Transcribed the whole 1911 conditions booklet, cover and twelve pages, from the NLA's scan `nla.obj-232173779` (`history/transcriptions/1911-information-conditions-and-particulars.md`), replacing the cover-only transcription.
+  The text was read by OCR and checked by hand against every page; the README now says what the booklet asked of competitors.
+
 ## 2026-11-13
 
 - Wrote the story of the competition as `history/README.md`, from the Board's report and Curtis's critique, with thumbnails of the shortlisted plans; the list of sources moved to `history/sources.md`.
@@ -38,7 +43,6 @@
 - Correct the street drafts by hand in QGIS, starting with the six shortlisted designs; mark edited features `source = "hand"`.
 - Consider teaching the street tracer to recognise hatching (Saarinen) and railways, or train a small segmentation model on the corrected drafts.
 - Next NLA visit: get and scan the items in `history/nla-visit-list.md`, starting with Bérard's streets plan and Gimson's plan.
-- Find the inside pages of the 1911 conditions booklet.
 - Consider evening out the paper tone between the four sheets in the composite.
 - Georeference Saarinen's "central area" sheet and Agache's public-buildings photograph with hand-picked control points (no grid; automatic matching failed).
 - Get Gimson's plan (NLA 445225, not digitised) via Copies Direct, or his report text, to replace or firm up the approximate No. 15 placement.

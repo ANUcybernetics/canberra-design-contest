@@ -21,9 +21,16 @@ That is why, a century later, they can be laid on the ground again: find the gri
 ## The call for designs
 
 The rules were set out in a booklet, *Information, Conditions and Particulars for Guidance in the Preparation of Competitive Designs for the Federal Capital City of the Commonwealth of Australia*.
-We have only its cover; the pages inside are still to be found.
+It was dated 30 April 1911, and its twelve pages are [transcribed here](transcriptions/1911-information-conditions-and-particulars.md).
 
 The prizes were £1,750, £750 and £500.
+Entries were due in Melbourne by 31 January 1912, unsigned, with the author's name sealed in a packet that only the Governor-General would open.
+Every general plan had to be drawn on the official contour map.
+
+The booklet asked for a city of 25,000 people that would keep growing with the nation.
+It listed the buildings the city needed, from a Houses of Parliament with a 600-foot frontage, "a dominating feature of the city", down to a gaol, a gas works and a stadium.
+It asked for railways, tramways, an ornamental lake on the Molonglo and a scheme for storm water, and it told competitors to embody "all recent developments in the science of town planning".
+The rest is a description of the site: its hills, its floods, its winds and the views from its trig stations.
 The judging was to be done by a board, but the last word belonged to the Minister for Home Affairs, King O'Malley.
 That arrangement kept many architects, in Britain especially, from entering at all.
 

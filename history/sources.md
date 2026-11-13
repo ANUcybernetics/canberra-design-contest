@@ -29,11 +29,12 @@ It comes in four sheets; we have all four, and have stitched them into one geore
 
 The booklet that set out the rules of the competition.
 
-- **Transcription:** [1911-information-conditions-and-particulars-cover.md](transcriptions/1911-information-conditions-and-particulars-cover.md)
-- **Original:** National Library of Australia, [nla.obj-232173787](https://nla.gov.au/nla.obj-232173787) (the scanned page), part of the work [nla.obj-232173779](https://nla.gov.au/nla.obj-232173779), holding JAFp HIST 74.
+- **Transcription:** [1911-information-conditions-and-particulars.md](transcriptions/1911-information-conditions-and-particulars.md), the cover and all twelve pages.
+- **Original:** National Library of Australia, [nla.obj-232173779](https://nla.gov.au/nla.obj-232173779), holding JAFp HIST 74; the cover alone is also [nla.obj-232173787](https://nla.gov.au/nla.obj-232173787).
 - **Collection:** *Competition design of Federal Capital City, Commonwealth of Australia: [information for competitors]*, [nla.obj-232173765](https://nla.gov.au/nla.obj-232173765), which the NLA catalogues as incomplete.
+- **Made by:** Department of Home Affairs, Melbourne, 30 April 1911; printed by J. Kemp, Government Printer for the State of Victoria (job C.5381).
 - **Copyright:** out of copyright (published 1911), according to the NLA.
-- **Note:** only the cover has been digitised, so the conditions themselves are not yet here.
+- **Note:** the maps and reports issued with the booklet, lettered (*b*) to (*k*) in its paragraph 6, are not part of this scan; map (*c*) is document 1 above.
 
 ### 3. Federal Capital City: Report of Board Appointed to Investigate and Report to the Minister for Home Affairs in Regard to Competitive Designs (1912)
 
@@ -81,7 +82,8 @@ The scans live in `scans/`, which git ignores, because they are large and can be
 | --- | --- |
 | `scans/1910-contour-survey/nla.obj-232175445.zip` | NLA download of all four contour map sheets: five JPEGs (the second repeats the first) and the copyright note. |
 | `scans/1910-contour-survey/nla.obj-232175459.tif` | Full-resolution TIFF of Sheet 1 (about 240 MB). |
-| `scans/1911-conditions/nla.obj-232173787.zip` | NLA download of the conditions booklet cover: a JPEG and the NLA copyright note. |
+| `scans/1911-conditions/nla.obj-232173779.zip` | NLA download of the whole conditions booklet: fourteen JPEGs (the second repeats the cover) and the copyright note. |
+| `scans/1911-conditions/nla.obj-232173787.zip` | NLA download of the conditions booklet cover alone: a JPEG and the NLA copyright note. |
 | `scans/1912-plans/1912-design-NN-*-nla.obj-*.tif` | Full-resolution NLA master TIFFs of the plan drawings for the significant entries (40–310 MB each), plus Ernest Gimson's two views for design No. 15. The design number and designer are in the name; see [1912-significant-entries-nla.md](1912-significant-entries-nla.md) and [curtis/README.md](curtis/README.md) for each record. |
 | `scans/1912-plans/1912-design-NN-*-nla.obj-*.jpg` | The two plans with no downloadable master: Griffin's copy A and Saarinen's lantern slide, each at the largest JPEG the NLA serves. |
 
@@ -90,7 +92,3 @@ The plan TIFFs come from `https://nla.gov.au/tarkine/nla.obj-<id>/m`, the link b
 The single-sheet download of Sheet 1, `nla.obj-232175459.zip`, is not kept: its JPEG is byte-for-byte the first image in `nla.obj-232175445.zip`.
 
 The ParlInfo PDF is not kept here; download it from the link above.
-
-## Still to find
-
-- The inside pages of the 1911 conditions booklet. The NLA's microform copy, [nla.obj-3416633692](https://nla.gov.au/nla.obj-3416633692), appears to hold all 12 pages.
