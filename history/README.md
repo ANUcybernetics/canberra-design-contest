@@ -45,6 +45,13 @@ The report also names the authors of the six shortlisted designs and of two more
 - **Citation:** Commonwealth of Australia, Parliamentary Paper No. 17 of 1912 (F.9752); presented by command and ordered to be printed 19 July 1912.
 - **Note:** the plates of the competing designs are described by their captions; the maps themselves are in the PDF.
 
+### 4. The significant entries at the National Library (compiled 2026)
+
+Not a transcription but a finding list.
+It gathers the NLA catalogue records, image links and catalogue notes for the eight designs named in the Board's report, and for André Bérard's design No. 37.
+
+- **List:** [1912-significant-entries-nla.md](1912-significant-entries-nla.md)
+
 ## Source files kept locally
 
 The scans we downloaded sit beside the transcriptions but are not committed to git, because they are large and can be fetched again from the links above.
@@ -60,4 +67,4 @@ The ParlInfo PDF is not kept here; download it from the link above.
 
 ## Still to find
 
-- The inside pages of the 1911 conditions booklet.
+- The inside pages of the 1911 conditions booklet. The NLA's microform copy, [nla.obj-3416633692](https://nla.gov.au/nla.obj-3416633692), appears to hold all 12 pages.
