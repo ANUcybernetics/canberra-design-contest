@@ -123,6 +123,17 @@ The warp follows the ruled grid, which is the more trustworthy of the two.
 Two plans are not done.
 Saarinen's "central area" sheet and Agache's public-buildings photograph show no grid and are drawn at a different scale from the lithographs of the same designs, and automatic matching found nothing reliable; they need control points picked by hand.
 
+### Gimson's No. 15: an approximate placement
+
+The Library holds only Gimson's two perspective views, not his plan ([445225](https://catalogue.nla.gov.au/catalog/445225), not digitised), so No. 15 cannot be registered like the others.
+`gimson.py` places the lower view, a bird's-eye view of the city, with a single perspective transform from the drawing to the ground, clipped to the foreground; the far shore and the hills cannot be placed.
+
+Every control point is an interpretation, written out in the script.
+The working reading is that the view looks south-west from above Reid and Campbell, across the Molonglo reach that ran north-west from the Duntroon loop; the large lake on the left is the loop's flooded flats, the arm running off to the upper left is Jerrabomberra Creek, the stadium stands on the north shore, and the hill with the acropolis-like group is Camp Hill.
+The seven points disagree with a single perspective by 162 m RMS (64–272 m), so treat the result as good to a few hundred metres at best, and worse away from the city's near edge.
+It is listed in the preview as approximate, and written to `output/plans/design-15-gimson-birdseye-approx-*.tif`.
+Gimson's own report, transcribed by John Reps, would settle the reading; a scan of the plan itself would replace this entirely.
+
 ## Things to know
 
 - The sheets were printed separately and differ a little in paper tone, so the seams show as faint changes of colour.

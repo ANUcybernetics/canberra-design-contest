@@ -42,6 +42,10 @@ out = []
 for name, spec in PLANS.items():
     if Path(f"output/plans/{name}-3857.tif").exists():
         out.append({"id": name, "label": spec["label"], "cog": f"/cog/plans/{name}-3857.tif"})
+# Gimson's bird's-eye view: a perspective, placed only approximately (gimson.py).
+g = "design-15-gimson-birdseye-approx"
+if Path(f"output/plans/{g}-3857.tif").exists():
+    out.append({"id": g, "label": "No. 15 Gimson: bird's-eye view, APPROXIMATE (±200–300 m)", "cog": f"/cog/plans/{g}-3857.tif"})
 Path("preview/public/data/plans.json").write_text(json.dumps(out, indent=1))
 print(f"{len(out)} plans listed for the preview")
 PY
