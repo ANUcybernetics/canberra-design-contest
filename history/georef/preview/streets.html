@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>1912 Streets over Today</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+    <div id="map"></div>
+    <aside class="panel">
+        <h1>Streets of the 1912 designs, over Canberra today</h1>
+        <p class="note">Centrelines traced automatically from each plan (<code>vectorise.py</code>); first drafts, not yet checked by hand. Click a street for its width.</p>
+        <h2>Designs</h2>
+        <div id="street-layers" class="plan-list"></div>
+        <label class="row"><input id="true-width" type="checkbox"> Draw streets at their traced width</label>
+        <h2>Satellite image</h2>
+        <label class="row">
+            <span>Brightness</span>
+            <input id="sat-brightness" type="range" min="0.15" max="1" step="0.05" value="0.6">
+        </label>
+        <h2>Plan beneath the streets</h2>
+        <label class="row">
+            <span>Opacity</span>
+            <input id="plan-opacity" type="range" min="0" max="1" step="0.05" value="0">
+        </label>
+        <p class="note">Shows the drawing of each design that is switched on, to check the tracing against it.</p>
+    </aside>
+    <script type="module" src="/src/streets.js"></script>
+</body>
+</html>

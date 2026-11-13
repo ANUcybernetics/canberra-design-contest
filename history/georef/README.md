@@ -188,6 +188,8 @@ Debug overlays land in `work/debug/streets/`: the plan washed out, the designer'
 A `--tile` run puts the original beside it.
 The length traced for each plan is in `gcps/plans/streets.json`.
 `make_web.sh` copies the centrelines into the preview, where each design has a checkbox and a click on a street gives its width.
+A second page, `preview/streets.html`, draws them over a satellite image of Canberra today (Esri World Imagery), with the plan beneath on a slider and an option to draw each street at its traced width.
+Run it alongside the first with `pnpm dev --port 5182` and open `/streets.html`; across the tailnet, `tailscale serve --bg --https=5183 http://127.0.0.1:5182`.
 
 ### What goes wrong
 

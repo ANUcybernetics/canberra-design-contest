@@ -9,4 +9,6 @@ export default defineConfig({
         allowedHosts: ['localhost', 'hectar', '.ts.net'],
     },
     worker: { format: 'es' },
+    // Two pages: the survey preview, and the traced streets over satellite imagery.
+    build: { rollupOptions: { input: { main: 'index.html', streets: 'streets.html' } } },
 });
