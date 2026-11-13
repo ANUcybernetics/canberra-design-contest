@@ -357,7 +357,7 @@ Both the *Table Talk* photograph and the ballroom photograph list the result as 
 The Minister's written decision names only three places.
 The fourth comes from these captions, and the catalogue record for Caswell's papers repeats it.
 
-The microform of the conditions booklet may also answer one of the gaps listed in the [README](README.md): the inside pages of the 1911 booklet.
+The microform of the conditions booklet may also answer one of the gaps listed in [sources.md](sources.md): the inside pages of the 1911 booklet.
 
 ## Gaps
 

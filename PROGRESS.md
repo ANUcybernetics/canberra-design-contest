@@ -2,6 +2,7 @@
 
 ## 2026-11-13
 
+- Wrote the story of the competition as `history/README.md`, from the Board's report and Curtis's critique, with thumbnails of the shortlisted plans; the list of sources moved to `history/sources.md`.
 - Moved the georeferencing pipeline to the top of the repository (`georef/`), its GIS outputs to `data/` and the MapLibre preview to `demos/georef-preview/`.
   Every script now takes its paths from `georef/paths.py`.
   Tidied the Python with ruff (configured in `georef/pyproject.toml`), and brought the stale docstrings of `repair.py` and `mapstyle.py` up to date; a clean run from the scans reproduces every committed control point.
