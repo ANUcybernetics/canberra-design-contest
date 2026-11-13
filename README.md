@@ -8,6 +8,6 @@ This repository gathers the sources for that competition and puts the entries ba
 | [`history/`](history/README.md) | The primary sources, transcribed into markdown, and the scans they came from. | Transcriptions yes, scans no |
 | [`georef/`](georef/README.md) | The pipeline that georeferences the 1910 contour survey and the plans drawn on it, and traces their streets. | Code and control points yes, scratch no |
 | [`data/`](data/README.md) | The GIS outputs of that pipeline, for QGIS. | No |
-| [`demos/`](demos/) | Web apps for looking at the outputs; so far, the [georef preview](demos/georef-preview/README.md). | Code yes, builds no |
+| [`demos/`](demos/) | Web apps for looking at the outputs; the [georef preview](demos/georef-preview/README.md), and Tom Griffiths's walkable 3D sketch of the entries, [Canberra Visions](demos/cbrsim/README.txt). | Code yes, builds no |
 
 Progress and next steps are in [PROGRESS.md](PROGRESS.md).

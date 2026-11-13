@@ -22,7 +22,12 @@
 - Added the railway, bridges and named public buildings to No. 10's styled map: the railway traced by eye, bridges where roads and rail cross water, and 44 of the 53 buildings in the plan's key named by reading their numbers (`georef/readings.py`).
 - Drew No. 10 as a modern street map in the manner of Google Maps (`georef/mapstyle.py`, `demos/georef-preview/styled.html`): roads classed by traced width, water from the plan's blue shore wash, parks from the absence of lot lines, buildings from hatching, and the plan's own place names.
 
+- Brought in Tom Griffiths's work: his Canberra Visions sim, a walkable PlayCanvas sketch with the bare 1911 site and Gimson's entry (`demos/cbrsim/`), and his transcription of L. A. Curtis's 1912 paper (`history/transcriptions/`).
+  His large NLA scans are left out of git; each has a `SOURCE.md` with its download URL.
+
 ## Next
+
+- Feed the sim from `georef/` and `data/`: steps 1 and 3 of `demos/cbrsim/PLAN.md` (the MGA55 frame and georeferencing the survey and plans) are already done there.
 
 - Judge the harder joins (gaps over 60 m, joins across junctions) with a vision model against the plan (designed, not yet built; it costs API spend, so agree a budget first).
 - Trace the railways and name the buildings of the other plans the way No. 10's were.
