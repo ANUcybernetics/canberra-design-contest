@@ -25,3 +25,23 @@ for layer in grid sheets stations; do
     output/contour-survey-1910-grid.gpkg "$layer"
 done
 ls -la "$OUT" "$DATA"
+
+# 1912 competition plans (from warp_plans.py / match_plans.py): link their
+# Web Mercator COGs into the preview and list them for the page.
+mkdir -p preview/public/cog/plans
+find preview/public/cog/plans -type l -delete
+for f in output/plans/*-3857.tif; do
+  [ -e "$f" ] || continue
+  ln -sfn "../../../../$f" "preview/public/cog/plans/$(basename "$f")"
+done
+uv run python - <<'PY'
+import json
+from pathlib import Path
+from plans import PLANS
+out = []
+for name, spec in PLANS.items():
+    if Path(f"output/plans/{name}-3857.tif").exists():
+        out.append({"id": name, "label": spec["label"], "cog": f"/cog/plans/{name}-3857.tif"})
+Path("preview/public/data/plans.json").write_text(json.dumps(out, indent=1))
+print(f"{len(out)} plans listed for the preview")
+PY

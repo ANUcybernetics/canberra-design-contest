@@ -135,6 +135,31 @@ HAPMAP.forEach((h) => {
     toggle(h.id, [h.id]);
 });
 
+// The 1912 competition plans, georeferenced onto the same survey grid
+// (../warp_plans.py), listed in /data/plans.json by ../make_web.sh.  They sit
+// above the 1910 survey and share one opacity slider.
+const PLAN_CREDIT = '1912 competition plans: <a href="https://nla.gov.au/">National Library of Australia</a>';
+const planOpacity = document.getElementById('plan-opacity');
+const planList = document.getElementById('plan-layers');
+map.on('load', async () => {
+    const plans = await (await fetch('/data/plans.json')).json();
+    plans.forEach((p) => {
+        map.addSource(p.id, { type: 'raster', url: 'cog://' + location.origin + p.cog, tileSize: 512, attribution: PLAN_CREDIT });
+        map.addLayer({
+            id: p.id, type: 'raster', source: p.id, layout: { visibility: 'none' },
+            paint: { 'raster-opacity': Number(planOpacity.value), 'raster-resampling': 'linear' },
+        }, 'sheets');
+        const row = document.createElement('label');
+        row.className = 'row';
+        row.innerHTML = `<input id="${p.id}" type="checkbox"> ${p.label}`;
+        planList.appendChild(row);
+        toggle(p.id, [p.id]);
+    });
+    planOpacity.addEventListener('input', () => {
+        plans.forEach((p) => map.setPaintProperty(p.id, 'raster-opacity', Number(planOpacity.value)));
+    });
+});
+
 toggle('grid', ['grid']);
 toggle('sheets', ['sheets']);
 toggle('stations', ['stations', 'station-labels']);

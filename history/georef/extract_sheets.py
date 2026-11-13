@@ -13,7 +13,7 @@ from pathlib import Path
 from sheets import HERE, SHEET_DIR, SHEETS
 
 ZIP_NAME = "nla.obj-232175445.zip"
-CANDIDATES = [HERE.parent / ZIP_NAME, HERE.parent.parent / ZIP_NAME]
+CANDIDATES = [HERE.parent / "scans" / "1910-contour-survey" / ZIP_NAME, HERE.parent / ZIP_NAME, HERE.parent.parent / ZIP_NAME]
 
 
 def main() -> None:

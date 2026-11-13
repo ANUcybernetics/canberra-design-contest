@@ -8,6 +8,9 @@ html, body { margin: 0; height: 100%; font: 14px/1.4 system-ui, sans-serif; back
 .panel h1 { font-size: 15px; margin: 0 0 10px; }
 .panel h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #666; margin: 12px 0 4px; }
 .row a { color: #888; text-decoration: none; }
+.panel { max-height: calc(100vh - 48px); overflow-y: auto; }
+.plan-list .row { align-items: flex-start; font-size: 13px; margin: 4px 0; }
+.plan-list .row input { margin-top: 3px; }
 .row { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
 .row input[type="range"] { flex: 1; }
 .note { margin: 8px 0 0; color: #666; font-size: 12px; }

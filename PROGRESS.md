@@ -6,8 +6,13 @@
 - Georeferenced the 1910 contour survey: all four sheets stitched into one GeoTIFF in GDA2020 / MGA zone 55 (`history/georef/`).
   The survey grid's origin is the Ainslie trig; nine surviving 1910 trig stations tie it to MGA at 2.8 m RMS.
 - Added a MapLibre preview of the composite over OpenStreetMap (`history/georef/preview/`), reading a Web Mercator COG with hapmap.app's `cog://` protocol.
+- Georeferenced 11 of the 13 competition plan images onto the same survey grid (`history/georef/plans.py`, `warp_plans.py`, `match_plans.py`), and added them to the preview.
+  Ten were registered from their own 2,500 ft grid; Saarinen's lantern slide by matching it to his lithograph.
+  Checked against the 1910 composite: no plan is offset overall; the lithographs wander locally by a median of 2–8 m, up to 32 m.
 
 ## Next
 
 - Find the inside pages of the 1911 conditions booklet.
 - Consider evening out the paper tone between the four sheets in the composite.
+- Georeference Saarinen's "central area" sheet and Agache's public-buildings photograph with hand-picked control points (no grid; automatic matching failed).
+- Decide whether to rubber-sheet the lithographs onto the 1910 base map, removing the local wander of their redrawn contours (see `history/georef/README.md`).

@@ -63,6 +63,10 @@ uv run python extract_sheets.py ../../nla.obj-232175445.zip
 uv run python detect_grid.py
 uv run python locate_stations.py
 uv run python fit_and_warp.py
+uv run python plans.py          # 1912 plans: find their grids
+uv run python warp_plans.py     # ... and warp them
+uv run python match_plans.py    # Saarinen's lantern slide
+uv run python qa_local.py       # check every plan against the 1910 composite
 ```
 
 To look at it over OpenStreetMap, make the web copy and start the preview:
@@ -81,6 +85,43 @@ To reach it securely across the tailnet, `tailscale serve --bg --https=5181 http
 
 It needs the GDAL command-line tools (`gdal_translate`, `gdalwarp`, `gdalbuildvrt`, `ogr2ogr`) on the path.
 Debug overlays for every step land in `work/debug/`.
+
+## The 1912 competition plans
+
+Most of the competition plans were drawn on, or redrawn onto, the 1910 survey, so they carry its 2,500 ft grid.
+That means they need no new control points: find a plan's grid, and the transform already fitted for the survey carries it to the ground.
+
+- `plans.py` finds the grid on each plan: all nine meridians and nine parallels, so 81 crossings.
+  The lines are faint (often only 35–60 grey levels darker than the paper), so it looks for thin lines darker than the paper on both sides, estimates each sheet's skew, fits an evenly spaced comb of nine lines, and traces each line along its length.
+  Comey's sheet is printed on its side and is turned upright first.
+- `crossings_sheet.py` makes a contact sheet of all 81 crossings at full resolution, which is the quickest way to see that every one sits on its ruled lines.
+- `warp_plans.py` warps each plan with a thin-plate spline through its crossings and writes `output/plans/<plan>-mga55.tif` (for QGIS) and `-3857.tif` (for the preview).
+- `match_plans.py` registers Saarinen's lantern slide, a photograph of his original on which no grid survives, by matching its linework block by block against his georeferenced lithograph.
+- `qa_local.py` checks each warped plan against the 1910 composite, which no plan was fitted to.
+  The plans were drawn on the survey, so their contours and river should sit on the composite's; it phase-correlates the linework in 1.2 km blocks and reports how far apart they are.
+
+| Plan | m/px | Median offset (m) | 90th percentile (m) | Max (m) |
+| --- | --- | --- | --- | --- |
+| No. 4 Agache (3rd): lithograph, sewerage | 1.04 | 3 | 9 | 20 |
+| No. 7 Magonigle (commended): lithograph | 1.04 | 7 | 13 | 18 |
+| No. 10 Griffiths, Coulter & Caswell (minority 1st): original | 0.68 | 0 | 3 | 4 |
+| No. 18 Saarinen (2nd): lithograph | 1.04 | 2 | 5 | 6 |
+| No. 18 Saarinen: lantern slide of original | 1.0 | 4 | 12 | 16 |
+| No. 29 Griffin (1st): lithograph, copy A | 1.39 | 4 | 10 | 12 |
+| No. 29 Griffin (1st): lithograph, copy B | 0.82 | 6 | 12 | 18 |
+| No. 35 Schanfelberg, Rees & Gummer (commended): lithograph | 1.04 | 8 | 16 | 32 |
+| No. 37 Bérard: streets plan | 0.81 | 6 | 8 | 18 |
+| No. 41 Comey (minority 2nd): lithograph | 1.03 | 2 | 11 | 22 |
+| No. 81 Gellerstedt (minority 3rd): lithograph | 1.04 | 4 | 8 | 12 |
+
+Over each whole sheet, every plan lands within one 4 m check pixel of the composite, so no grid was mislabelled.
+Locally the lithographs wander a few metres, and up to 20–30 m in places.
+The offsets are smooth, not random: the lithographers redrew the survey's contours and river onto a single reduced sheet, and their redrawing departs from the ruled grid by up to a couple of millimetres on paper.
+Design No. 10, drawn by its authors directly on a full-size print of the survey, agrees to within 4 m everywhere.
+The warp follows the ruled grid, which is the more trustworthy of the two.
+
+Two plans are not done.
+Saarinen's "central area" sheet and Agache's public-buildings photograph show no grid and are drawn at a different scale from the lithographs of the same designs, and automatic matching found nothing reliable; they need control points picked by hand.
 
 ## Things to know
 

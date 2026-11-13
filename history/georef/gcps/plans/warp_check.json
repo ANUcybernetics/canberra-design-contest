@@ -1,0 +1,62 @@
+{
+  "design-29-griffin-copyB": {
+    "res_m": 0.82,
+    "shift_e_m": 0.0,
+    "shift_n_m": 4.0,
+    "peak_sigma": 100.7
+  },
+  "design-04-agache-sewerage": {
+    "res_m": 1.04,
+    "shift_e_m": 0.0,
+    "shift_n_m": 0.0,
+    "peak_sigma": 93.4
+  },
+  "design-07-magonigle": {
+    "res_m": 1.04,
+    "shift_e_m": 4.0,
+    "shift_n_m": -4.0,
+    "peak_sigma": 108.8
+  },
+  "design-29-griffin-copyA": {
+    "res_m": 1.39,
+    "shift_e_m": 0.0,
+    "shift_n_m": 0.0,
+    "peak_sigma": 109.1
+  },
+  "design-18-saarinen": {
+    "res_m": 1.04,
+    "shift_e_m": 0.0,
+    "shift_n_m": 0.0,
+    "peak_sigma": 97.0
+  },
+  "design-10-griffiths-coulter-caswell": {
+    "res_m": 0.68,
+    "shift_e_m": 0.0,
+    "shift_n_m": 0.0,
+    "peak_sigma": 269.6
+  },
+  "design-35-schanfelberg-rees-gummer": {
+    "res_m": 1.04,
+    "shift_e_m": -4.0,
+    "shift_n_m": 0.0,
+    "peak_sigma": 60.4
+  },
+  "design-41-comey": {
+    "res_m": 1.03,
+    "shift_e_m": 0.0,
+    "shift_n_m": 0.0,
+    "peak_sigma": 245.8
+  },
+  "design-37-berard": {
+    "res_m": 0.81,
+    "shift_e_m": 0.0,
+    "shift_n_m": 0.0,
+    "peak_sigma": 122.1
+  },
+  "design-81-gellerstedt": {
+    "res_m": 1.04,
+    "shift_e_m": 0.0,
+    "shift_n_m": 0.0,
+    "peak_sigma": 83.5
+  }
+}
