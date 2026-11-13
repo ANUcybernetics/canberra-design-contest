@@ -1,8 +1,8 @@
 {
-  "name": "contour-survey-1910-preview",
+  "name": "georef-preview",
   "private": true,
   "type": "module",
-  "description": "Preview the georeferenced 1910 contour survey over OpenStreetMap",
+  "description": "Preview the georeferenced 1910 contour survey, the 1912 plans and their traced streets",
   "scripts": {
     "dev": "vite",
     "build": "vite build"

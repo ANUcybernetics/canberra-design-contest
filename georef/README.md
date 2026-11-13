@@ -1,10 +1,14 @@
 # Georeferencing the 1910 contour survey
 
-This folder turns the four sheets of the 1910 *Map of Contour Survey of the Site for the Federal Capital of Australia* into one georeferenced image that drops straight into QGIS.
+This folder holds the code that turns the four sheets of the 1910 *Map of Contour Survey of the Site for the Federal Capital of Australia* into one georeferenced image that drops straight into QGIS.
 
-The result is `output/contour-survey-1910-mga55.tif`, a Cloud-Optimised GeoTIFF in GDA2020 / MGA zone 55 (EPSG:7855) at 0.7 m per pixel.
-Beside it, `output/contour-survey-1910-grid.gpkg` holds the 1910 grid lines, the four sheet outlines and the control stations, so you can check the fit for yourself.
+It then does the same for the 1912 competition plans drawn on that survey, and traces their streets.
+
+The main result is `data/contour-survey-1910-mga55.tif`, a Cloud-Optimised GeoTIFF in GDA2020 / MGA zone 55 (EPSG:7855) at 0.7 m per pixel.
+Beside it, `data/contour-survey-1910-grid.gpkg` holds the 1910 grid lines, the four sheet outlines and the control stations, so you can check the fit for yourself.
 Neither file is committed; run the pipeline to make them.
+Everything the pipeline makes for QGIS goes to [`data/`](../data/README.md) at the top of the repository, and the web copies for the MapLibre preview go to [`demos/georef-preview/`](../demos/georef-preview/README.md).
+`paths.py` says where each script reads and writes.
 
 ## The survey's own coordinates
 
@@ -45,7 +49,7 @@ St John's Church, Reid, drawn on Sheet 2 as "Church and Spire", lands within a f
 
 ## The pipeline
 
-Each step writes small text files to `gcps/`, which are committed; the scans, working files and outputs are not.
+Each step writes small text files to `gcps/`, which are committed; the scans, the working files in `work/` and the outputs in `data/` are not.
 
 1. `extract_sheets.py` unpacks the sheets from the NLA download `nla.obj-232175445.zip`.
    Image 2 in that zip duplicates image 1, so the sheets are images 1, 3, 4 and 5.
@@ -57,32 +61,24 @@ Each step writes small text files to `gcps/`, which are committed; the scans, wo
 To run it all:
 
 ```sh
-cd history/georef
+cd georef
 uv sync
-uv run python extract_sheets.py   # finds ../scans/1910-contour-survey/nla.obj-232175445.zip
+uv run python extract_sheets.py  # finds history/scans/1910-contour-survey/nla.obj-232175445.zip
 uv run python detect_grid.py
 uv run python locate_stations.py
 uv run python fit_and_warp.py
-uv run python plans.py          # 1912 plans: find their grids
-uv run python warp_plans.py     # ... and warp them
-uv run python match_plans.py    # Saarinen's lantern slide
-uv run python qa_local.py       # check every plan against the 1910 composite
-uv run python vectorise.py      # trace each plan's streets as centrelines
+uv run python plans.py           # 1912 plans: find their grids
+uv run python warp_plans.py      # ... and warp them
+uv run python match_plans.py     # Saarinen's lantern slide
+uv run python qa_local.py        # check every plan against the 1910 composite
+uv run python gimson.py          # Gimson's bird's-eye view, approximately
+uv run python vectorise.py       # trace each plan's streets as centrelines
+uv run python repair.py          # ... and mend the networks
+uv run python mapstyle.py        # No. 10 as a modern street map, for the preview
+./make_web.sh                    # web copies for the preview
 ```
 
-To look at it over OpenStreetMap, make the web copy and start the preview:
-
-```sh
-./make_web.sh            # Web Mercator COG + GeoJSON for the preview
-cd preview && pnpm install && pnpm dev
-```
-
-The preview is a small Vite and MapLibre page on port 5180.
-It reads the COG straight from the file with `src/cog.js`, the `cog://` protocol from hapmap.app, which draws Web Mercator COGs only; hence the separate EPSG:3857 copy, compressed as WebP with an alpha band.
-It has an opacity slider, toggles for the 1910 grid, sheet outlines and stations, and the space bar flicks the old map on and off.
-Beneath the survey you can switch on historical aerial photo mosaics from hapmap.app (1926 MAP3584 and 12 March 1945 MAP1537), read straight from hapmap.app's COGs; add more in the `HAPMAP` list in `preview/src/main.js`.
-The 1926 mosaic only reaches as far east as about 149.116°E, so it covers just the western quarter of the survey.
-To reach it securely across the tailnet, `tailscale serve --bg --https=5181 http://127.0.0.1:5180`, then open `https://<host>.<tailnet>.ts.net:5181/`.
+To look at the results over OpenStreetMap or a satellite image, start the preview in [`demos/georef-preview/`](../demos/georef-preview/README.md).
 
 It needs the GDAL command-line tools (`gdal_translate`, `gdalwarp`, `gdalbuildvrt`, `ogr2ogr`) on the path.
 Debug overlays for every step land in `work/debug/`.
@@ -96,7 +92,7 @@ That means they need no new control points: find a plan's grid, and the transfor
   The lines are faint (often only 35–60 grey levels darker than the paper), so it looks for thin lines darker than the paper on both sides, estimates each sheet's skew, fits an evenly spaced comb of nine lines, and traces each line along its length.
   Comey's sheet is printed on its side and is turned upright first.
 - `crossings_sheet.py` makes a contact sheet of all 81 crossings at full resolution, which is the quickest way to see that every one sits on its ruled lines.
-- `warp_plans.py` warps each plan with a thin-plate spline through its crossings and writes `output/plans/<plan>-mga55.tif` (for QGIS) and `-3857.tif` (for the preview).
+- `warp_plans.py` warps each plan with a thin-plate spline through its crossings and writes `data/plans/<plan>-mga55.tif` (for QGIS) and `-3857.tif` (for the preview).
 - `match_plans.py` registers Saarinen's lantern slide, a photograph of his original on which no grid survives, by matching its linework block by block against his georeferenced lithograph.
 - `qa_local.py` checks each warped plan against the 1910 composite, which no plan was fitted to.
   The plans were drawn on the survey, so their contours and river should sit on the composite's; it phase-correlates the linework in 1.2 km blocks and reports how far apart they are.
@@ -132,12 +128,12 @@ The Library holds only Gimson's two perspective views, not his plan ([445225](ht
 Every control point is an interpretation, written out in the script.
 The working reading is that the view looks south-west from above Reid and Campbell, across the Molonglo reach that ran north-west from the Duntroon loop; the large lake on the left is the loop's flooded flats, the arm running off to the upper left is Jerrabomberra Creek, the stadium stands on the north shore, and the hill with the acropolis-like group is Camp Hill.
 The seven points disagree with a single perspective by 162 m RMS (64–272 m), so treat the result as good to a few hundred metres at best, and worse away from the city's near edge.
-It is listed in the preview as approximate, and written to `output/plans/design-15-gimson-birdseye-approx-*.tif`.
+It is listed in the preview as approximate, and written to `data/plans/design-15-gimson-birdseye-approx-*.tif`.
 Gimson's own report, transcribed by John Reps, would settle the reading; a scan of the plan itself would replace this entirely.
 
 ## Tracing the streets
 
-`vectorise.py` draws each warped plan's streets as centrelines, with a width on every one, and writes them to `output/streets/<plan>.geojson` and `output/streets-1912.gpkg` (one layer per design, EPSG:7855).
+`vectorise.py` draws each warped plan's streets as centrelines, with a width on every one, and writes them to `data/streets/<plan>.geojson` and `data/streets-1912.gpkg` (one layer per design, EPSG:7855).
 They are automatic first drafts.
 They catch most of the streets on flat ground and miss or invent some on steep ground, so treat them as a start for correcting by hand in QGIS, not as a finished map.
 
@@ -187,13 +183,11 @@ uv run python vectorise.py --tile 693700 6092500 694500 6093300 design-29-griffi
 Debug overlays land in `work/debug/streets/`: the plan washed out, the designer's ink in dark grey, the survey's lines that were taken out in pale blue, kept centrelines in red and rejected skeleton edges in pale green.
 A `--tile` run puts the original beside it.
 The length traced for each plan is in `gcps/plans/streets.json`.
-`make_web.sh` copies the centrelines into the preview, where each design has a checkbox and a click on a street gives its width.
-A second page, `preview/streets.html`, draws them over a satellite image of Canberra today (Esri World Imagery), with the plan beneath on a slider and an option to draw each street at its traced width.
-Run it alongside the first with `pnpm dev --port 5182` and open `/streets.html`; across the tailnet, `tailscale serve --bg --https=5183 http://127.0.0.1:5182`.
+`make_web.sh` copies the centrelines into the preview, which draws them over the plans and over a satellite image of Canberra today.
 
 ### Repairing the networks
 
-`repair.py` mends the traced networks and writes `output/streets/<plan>-repaired.geojson`, plus a `<plan>-repaired` layer in `output/streets-1912.gpkg`.
+`repair.py` mends the traced networks and writes `data/streets/<plan>-repaired.geojson`, plus a `<plan>-repaired` layer in `data/streets-1912.gpkg`.
 Each feature records what was done to it: `source` is `traced`, `avenue` or `joined`; `fit` is `line` or `arc` where a street was refitted; and `class` is its place in the network.
 Every step is plain geometry, checked against the plan's own ink, and the whole run takes under a minute a plan.
 
@@ -236,7 +230,7 @@ What it does not yet do:
 
 ### A modern street map of No. 10
 
-`mapstyle.py` turns a traced plan into the layers of a modern street map, and `preview/styled.html` draws them in the manner of Google Maps.
+`mapstyle.py` turns a traced plan into the layers of a modern street map, and the preview's `styled.html` draws them in the manner of Google Maps.
 It is done for No. 10, the only plan with a colour wash and lettered names to work from; `?plan=<id>` shows another design's streets in the same style, without water or labels.
 
 - **Roads** come from the repaired network and keep the classes `repair.py` gives them by their place in the network: avenues with planted medians (drawn with a green strip), boulevards and avenues in yellow as Google draws main roads, then streets and lanes. A plan not yet repaired is classed by traced width alone.
@@ -251,11 +245,8 @@ Everything read off the plan by eye, rather than detected, is kept together in `
 It was read from crops drawn with a labelled MGA55 grid, and is good to about ten metres.
 
 ```sh
-uv run python mapstyle.py        # writes preview/public/data/styled/<plan>/
+uv run python mapstyle.py        # writes demos/georef-preview/public/data/styled/<plan>/
 ```
-
-Open `/styled.html` on the preview server.
-A slider fades the original drawing in over the map, and a checkbox puts today's satellite image beneath the streets.
 
 ### What goes wrong
 

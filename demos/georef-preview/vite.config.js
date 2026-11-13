@@ -9,6 +9,7 @@ export default defineConfig({
         allowedHosts: ['localhost', 'hectar', '.ts.net'],
     },
     worker: { format: 'es' },
-    // Two pages: the survey preview, and the traced streets over satellite imagery.
+    // Three pages: the survey and plans, the traced streets over satellite
+    // imagery, and No. 10 drawn as a modern street map.
     build: { rollupOptions: { input: { main: 'index.html', streets: 'streets.html', styled: 'styled.html' } } },
 });

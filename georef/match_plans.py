@@ -27,8 +27,9 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from plans import DEBUG, PLAN_GCP_DIR, SRC
-from warp_plans import OUT, load_transform, warp
+from paths import PLAN_COGS, PLAN_GCP_DIR
+from plans import DEBUG, SRC
+from warp_plans import load_transform, warp
 
 Image.MAX_IMAGE_PIXELS = None
 
@@ -62,7 +63,7 @@ def load(path, longest=WORK_PX):
 
 def reference(ref_name, plan_px_per_m=None):
     """The reference plan, in MGA, as a grey array plus its geotransform."""
-    tif = OUT / f"{ref_name}-mga55.tif"
+    tif = PLAN_COGS / f"{ref_name}-mga55.tif"
     info = json.loads(subprocess.run(["gdalinfo", "-json", str(tif)], capture_output=True, text=True, check=True).stdout)
     gt = info["geoTransform"]
     a, s, _full = load(tif)

@@ -10,12 +10,12 @@ Usage: uv run python qa_local.py [plan ...]
 import json
 import subprocess
 import sys
-from pathlib import Path
 
 import numpy as np
 
 from plans import PLANS
-from warp_plans import COMPOSITE, OUT, TMP, edges
+from paths import COMPOSITE, PLAN_COGS, PLAN_GCP_DIR
+from warp_plans import TMP, edges
 
 RES = 2.0
 BLOCK = 600  # pixels at RES -> 1.2 km
@@ -34,7 +34,7 @@ def shift(a, b):
 
 
 def check(name):
-    tif = OUT / f"{name}-mga55.tif"
+    tif = PLAN_COGS / f"{name}-mga55.tif"
     info = json.loads(subprocess.run(["gdalinfo", "-json", str(tif)], capture_output=True, text=True, check=True).stdout)
     (xmin, ymax), (xmax, ymin) = info["cornerCoordinates"]["upperLeft"], info["cornerCoordinates"]["lowerRight"]
     a = edges(tif, (xmin, ymin, xmax, ymax), RES)
@@ -56,9 +56,9 @@ def check(name):
 
 
 if __name__ == "__main__":
-    names = sys.argv[1:] or [p for p in PLANS if (OUT / f"{p}-mga55.tif").exists()]
+    names = sys.argv[1:] or [p for p in PLANS if (PLAN_COGS / f"{p}-mga55.tif").exists()]
     res = {n: check(n) for n in names}
-    path = OUT.parent.parent / "gcps" / "plans" / "qa_local.json"
-    old = json.loads(Path(path).read_text()) if path.exists() else {}
+    path = PLAN_GCP_DIR / "qa_local.json"
+    old = json.loads(path.read_text()) if path.exists() else {}
     old.update(res)
-    path.write_text(json.dumps(old, indent=2))
+    path.write_text(json.dumps(old, indent=2) + "\n")

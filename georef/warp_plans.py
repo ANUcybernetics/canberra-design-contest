@@ -12,8 +12,8 @@ the warped plan's linework against the composite's and report the shift; a
 mislabelled grid would show up as a shift of ~762 m (one 2,500 ft interval).
 
 Outputs (gitignored)
-  output/plans/<plan>-mga55.tif   COG, EPSG:7855, for QGIS
-  output/plans/<plan>-3857.tif    Web Mercator COG (WebP + alpha) for the preview
+  data/plans/<plan>-mga55.tif   COG, EPSG:7855, for QGIS
+  data/plans/<plan>-3857.tif    Web Mercator COG (WebP + alpha) for the preview
 
 Usage: uv run python warp_plans.py [plan ...]
 """
@@ -27,13 +27,11 @@ from pathlib import Path
 import numpy as np
 
 from fit_and_warp import box_ring, helmert, write_cutline
-from plans import PLAN_GCP_DIR, PLANS, SRC
-from sheets import GCP_DIR, HERE, WORK
+from paths import COMPOSITE, GCP_DIR, PLAN_COGS, PLAN_GCP_DIR, WORK
+from plans import PLANS, SRC
 
 EPSG = 7855
-OUT = HERE / "output" / "plans"
 TMP = WORK / "plans"
-COMPOSITE = HERE / "output" / "contour-survey-1910-mga55.tif"
 
 
 def run(cmd):
@@ -64,7 +62,7 @@ def warp(name, h, m, gcp_csv=None, method="-tps", res=None):
         step = np.median(np.hypot(*np.diff(px, axis=1).reshape(-1, 2).T))
         res = round(2500 * 0.3048 / step, 2)
     TMP.mkdir(parents=True, exist_ok=True)
-    OUT.mkdir(parents=True, exist_ok=True)
+    PLAN_COGS.mkdir(parents=True, exist_ok=True)
     vrt = TMP / f"{name}_gcps.vrt"
     run(["gdal_translate", "-q", "-of", "VRT", "-a_srs", f"EPSG:{EPSG}", *gcps, str(SRC / PLANS[name]["file"]), str(vrt)])
     cut = TMP / f"{name}_cut.geojson"
@@ -106,7 +104,7 @@ def warp(name, h, m, gcp_csv=None, method="-tps", res=None):
     # The lantern slide is greyscale: expand to RGB so every output looks alike.
     bands = int(subprocess.run(["gdalinfo", "-json", str(warped)], capture_output=True, text=True, check=True).stdout.count('"band":'))
     expand = ["-b", "1", "-b", "1", "-b", "1", "-b", "2"] if bands == 2 else []
-    mga = OUT / f"{name}-mga55.tif"
+    mga = PLAN_COGS / f"{name}-mga55.tif"
     mga.unlink(missing_ok=True)
     run(
         [
@@ -127,7 +125,7 @@ def warp(name, h, m, gcp_csv=None, method="-tps", res=None):
             str(mga),
         ]
     )
-    web = OUT / f"{name}-3857.tif"
+    web = PLAN_COGS / f"{name}-3857.tif"
     web.unlink(missing_ok=True)
     srcband = [] if not expand else ["-b", "1", "-b", "1", "-b", "1", "-b", "2"]
     tmp_rgba = TMP / f"{name}_rgba.vrt"

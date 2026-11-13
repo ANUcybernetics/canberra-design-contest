@@ -1,6 +1,6 @@
 """Repair the street networks traced by vectorise.py.
 
-Reads output/streets/<plan>.geojson and writes <plan>-repaired.geojson beside
+Reads data/streets/<plan>.geojson and writes <plan>-repaired.geojson beside
 it, every feature tagged with what was done to it.  Each step is plain
 geometry, checked against the plan's own ink; no step asks a model.
 
@@ -39,16 +39,14 @@ from shapely.ops import polygonize, unary_union
 from shapely.strtree import STRtree
 
 from plans import PLANS
-from sheets import HERE, WORK
+from paths import PLAN_COGS, PLAN_GCP_DIR, STREETS, STREETS_GPKG, WORK
 from vectorise import (
-    STREETS,
     cfg,
     free_space,
     orientation,
     read_plan,
     read_survey,
 )
-from warp_plans import OUT
 
 CACHE = WORK / "repair"
 DEBUG = WORK / "debug" / "repair"
@@ -205,7 +203,7 @@ class Plan:
         CACHE.mkdir(parents=True, exist_ok=True)
         self.name = name
         path = CACHE / f"{name}-design.png"
-        with rasterio.open(OUT / f"{name}-mga55.tif") as src:
+        with rasterio.open(PLAN_COGS / f"{name}-mga55.tif") as src:
             self.tr, self.px = src.transform, src.res[0]
         if path.exists():
             design = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE) > 0
@@ -1005,7 +1003,7 @@ def compare(name, sites, half=130, size=520):
         return [f for f in json.loads(path.read_text())["features"]]
 
     before, after = feats(STREETS / f"{name}.geojson"), feats(STREETS / f"{name}-repaired.geojson")
-    src = rasterio.open(OUT / f"{name}-mga55.tif")
+    src = rasterio.open(PLAN_COGS / f"{name}-mga55.tif")
     rows = []
     for cx, cy in sites:
         b = (cx - half, cy - half, cx + half, cy + half)
@@ -1045,7 +1043,7 @@ if __name__ == "__main__":
         print(compare(name, sites))
         sys.exit()
     names = sys.argv[1:] or [p for p in PLANS if (STREETS / f"{p}.geojson").exists()]
-    path = HERE / "gcps" / "plans" / "repair.json"
+    path = PLAN_GCP_DIR / "repair.json"
     stats = json.loads(path.read_text()) if path.exists() else {}
     for n in names:
         stats[n] = run(n)
@@ -1053,7 +1051,7 @@ if __name__ == "__main__":
     # Repaired layers beside the traced ones in the GeoPackage.
     import subprocess
 
-    gpkg = HERE / "output" / "streets-1912.gpkg"
+    gpkg = STREETS_GPKG
     for n in names:
         mode = ["-update", "-overwrite"] if gpkg.exists() else []
         src = STREETS / f"{n}-repaired.geojson"

@@ -5,7 +5,7 @@ compiled: 2026-11-13
 
 # What to get at the National Library next visit
 
-This is everything we know we want from the Library, gathered from [1912-significant-entries-nla.md](1912-significant-entries-nla.md), [curtis/README.md](curtis/README.md) and the georeferencing work in [georef/](georef/README.md).
+This is everything we know we want from the Library, gathered from [1912-significant-entries-nla.md](1912-significant-entries-nla.md), [curtis/README.md](curtis/README.md) and the georeferencing work in [georef/](../georef/README.md).
 Each item gives its catalogue record (Bib ID), which is enough for staff to find it.
 Map items usually have to be requested ahead of a visit; the "Request" button on each catalogue record does that.
 

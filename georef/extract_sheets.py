@@ -10,15 +10,16 @@ import sys
 import zipfile
 from pathlib import Path
 
-from sheets import HERE, SHEET_DIR, SHEETS
+from paths import SCANS
+from sheets import SHEET_DIR, SHEETS
 
 ZIP_NAME = "nla.obj-232175445.zip"
-CANDIDATES = [HERE.parent / "scans" / "1910-contour-survey" / ZIP_NAME, HERE.parent / ZIP_NAME, HERE.parent.parent / ZIP_NAME]
+DEFAULT = SCANS / "1910-contour-survey" / ZIP_NAME
 
 
 def main() -> None:
-    src = Path(sys.argv[1]) if len(sys.argv) > 1 else next((p for p in CANDIDATES if p.exists()), None)
-    if src is None or not src.exists():
+    src = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT
+    if not src.exists():
         sys.exit(f"Can't find {ZIP_NAME}; download it from https://nla.gov.au/nla.obj-232175445 and pass its path.")
     SHEET_DIR.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(src) as z:

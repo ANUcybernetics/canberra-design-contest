@@ -2,7 +2,7 @@
 
 Reads the street centrelines from vectorise.py and the warped plan, and
 writes WGS84 GeoJSON for the "styled" preview page
-(preview/public/data/styled/<plan>/):
+(demos/georef-preview/public/data/styled/<plan>/):
 
 - roads.geojson: the centrelines, smoothed, each given a class by its traced
   width (boulevard, avenue, street, lane).
@@ -35,11 +35,10 @@ from shapely.ops import unary_union
 from skimage.morphology import remove_small_holes, remove_small_objects
 
 from readings import KEY, LABELS, LETTERED, NOT_BUILDINGS, NUMBERED, RAILWAYS, SHORES
-from sheets import HERE
-from vectorise import EXCLUDE, STREETS, cfg, disk
-from warp_plans import OUT
+from paths import PLAN_COGS, STREETS, WEB_DATA
+from vectorise import EXCLUDE, cfg, disk
 
-WEB = HERE / "preview" / "public" / "data" / "styled"
+WEB = WEB_DATA / "styled"
 RES = 2.0  # working grid for areas, metres
 GAP_M = 180  # gaps in the shore wash up to this wide are bridged
 MIN_WATER_M2 = 250_000  # smaller detached water is not the river
@@ -149,7 +148,7 @@ def roads(name, repaired=True):
 
 def read_grid(name):
     """The plan at RES metres, as RGB, with its transform."""
-    with rasterio.open(OUT / f"{name}-mga55.tif") as src:
+    with rasterio.open(PLAN_COGS / f"{name}-mga55.tif") as src:
         f = src.res[0] / RES
         h, w = int(src.height * f), int(src.width * f)
         rgb = src.read([1, 2, 3], out_shape=(3, h, w), resampling=rasterio.enums.Resampling.average)
@@ -159,7 +158,7 @@ def read_grid(name):
 
 def ink_fraction(name, tr, shape_):
     """Fraction of each RES cell covered by black ink at full resolution."""
-    with rasterio.open(OUT / f"{name}-mga55.tif") as src:
+    with rasterio.open(PLAN_COGS / f"{name}-mga55.tif") as src:
         rgb = src.read([1, 2, 3]).astype(np.int16)
         px = src.res[0]
     lum = rgb.mean(axis=0).astype(np.uint8)

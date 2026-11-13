@@ -14,8 +14,8 @@ Steps
    mosaic the four into one Cloud-Optimised GeoTIFF.
 
 Outputs
-  output/contour-survey-1910-mga55.tif   the composite (EPSG:7855)
-  output/contour-survey-1910-grid.gpkg   1910 grid lines, sheet outlines and
+  data/contour-survey-1910-mga55.tif   the composite (EPSG:7855)
+  data/contour-survey-1910-grid.gpkg   1910 grid lines, sheet outlines and
                                          control stations, for checking in QGIS
   gcps/transform.json                    fitted parameters and residuals
 
@@ -30,11 +30,11 @@ import subprocess
 
 import numpy as np
 
-from sheets import GCP_DIR, GRID_STEP_FT, HERE, SHEET_DIR, SHEETS, WORK
+from paths import COMPOSITE, DATA, GCP_DIR, GRID_GPKG, ROOT, WORK
+from sheets import GRID_STEP_FT, SHEET_DIR, SHEETS
 
 FT = 0.3048  # metres per foot; the similarity fit's scale absorbs any difference
 RES_M = 0.7  # output pixel size; the scans are ~0.74 m/px at map scale
-OUT = HERE / "output"
 EPSG = 7855  # GDA2020 / MGA zone 55
 # Red Hill is plotted for checking only: the register's RED HILL ECCE is an
 # eccentric station and may not mark the 1910 point.
@@ -203,7 +203,7 @@ def write_check_layers(h, stations, m):
                 "geometry": {"type": "Point", "coordinates": [s["e"], s["n"]]},
             }
         )
-    gpkg = OUT / "contour-survey-1910-grid.gpkg"
+    gpkg = GRID_GPKG
     gpkg.unlink(missing_ok=True)
     for layer, fs in feats.items():
         tmp = WORK / f"{layer}.geojson"
@@ -220,7 +220,7 @@ def write_check_layers(h, stations, m):
 
 
 def main():
-    OUT.mkdir(exist_ok=True)
+    DATA.mkdir(exist_ok=True)
     (WORK / "warp").mkdir(parents=True, exist_ok=True)
 
     print("Step 1: scan pixels -> survey grid")
@@ -354,7 +354,7 @@ def main():
     print("Mosaic -> COG")
     mosaic = WORK / "warp" / "mosaic.vrt"
     run(["gdalbuildvrt", "-q", str(mosaic), *warped])
-    final = OUT / "contour-survey-1910-mga55.tif"
+    final = COMPOSITE
     final.unlink(missing_ok=True)
     run(
         [
@@ -377,7 +377,7 @@ def main():
 
     print("Check layers -> GeoPackage")
     write_check_layers(h, stations, m)
-    print(f"  done: {final.relative_to(HERE)}")
+    print(f"  done: {final.relative_to(ROOT)}")
     if shutil.which("gdalinfo"):
         subprocess.run(["gdalinfo", "-nomd", str(final)], check=False)
 

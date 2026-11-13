@@ -15,12 +15,9 @@ Sheet layout (each sheet covers 10,000 x 10,000 ft of grid):
      20k..10k   10k..0  ft W
 """
 
-from pathlib import Path
+from paths import WORK
 
-HERE = Path(__file__).resolve().parent
-WORK = HERE / "work"
 SHEET_DIR = WORK / "sheets"
-GCP_DIR = HERE / "gcps"
 
 # NLA object nla.obj-232175445 is a five-image set; image 2 duplicates image 1.
 SHEETS = {

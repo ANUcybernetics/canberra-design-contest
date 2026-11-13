@@ -1,6 +1,6 @@
 // A competition design drawn as a modern street map, from the layers made by
-// ../mapstyle.py (roads classed by traced width, water, parks, buildings and
-// the plan's own place names).  ?plan=<id> picks the design; No. 10 by
+// georef/mapstyle.py (roads classed by repair.py, the railway, water, parks,
+// buildings and the plan's own place names).  ?plan=<id> picks the design; No. 10 by
 // default.
 
 import maplibregl from 'maplibre-gl';

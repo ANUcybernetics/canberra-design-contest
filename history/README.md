@@ -21,7 +21,7 @@ It comes in four sheets; we have all four, and have stitched them into one geore
 - **Made by:** drawn on stone by O. Fischer and A.G. von Stach under the direction of E.S. Vautin; lithograph no. 10.483 D.
 - **Copyright:** out of copyright (published 1910), according to the NLA.
 - **All four sheets:** National Library of Australia, [nla.obj-232175445](https://nla.gov.au/nla.obj-232175445).
-- **Georeferenced composite:** see [georef/](georef/README.md), which builds a GeoTIFF of all four sheets in GDA2020 / MGA zone 55 for QGIS.
+- **Georeferenced composite:** see [georef/](../georef/README.md), which builds a GeoTIFF of all four sheets in GDA2020 / MGA zone 55 for QGIS.
 - **Note:** the transcription records the printed words on Sheet 1 and describes the sheet; it does not reproduce the contour heights.
 
 ### 2. Information, Conditions and Particulars for Guidance in the Preparation of Competitive Designs for the Federal Capital City of the Commonwealth of Australia (1911)
@@ -69,7 +69,8 @@ Curtis comments on 33 designs; the folder lists each one with his words and the 
 | `thumbnails/1912-plans/` | JPEG thumbnails, 1,200 pixels on the long edge, of each plan scan in `scans/1912-plans/`, under the same names. | Yes |
 | `curtis/` | The finding list for L. A. Curtis's 1912 critique, with the page photographs in `curtis/photos/`. | List yes, photos no |
 | `scans/` | The original scans as downloaded. | No |
-| `georef/` | The pipeline that georeferences the 1910 contour survey and the plans drawn on it. | Code yes, outputs no |
+
+The georeferencing pipeline that works from these scans is in [../georef/](../georef/README.md), at the top of the repository.
 
 ## Original scans
 

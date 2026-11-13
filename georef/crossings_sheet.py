@@ -12,7 +12,8 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 
-from plans import BEND_PX, DEBUG, PLAN_GCP_DIR, PLANS, SRC
+from paths import PLAN_GCP_DIR
+from plans import BEND_PX, DEBUG, PLANS, SRC
 
 Image.MAX_IMAGE_PIXELS = None
 

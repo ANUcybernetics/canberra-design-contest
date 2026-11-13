@@ -23,12 +23,15 @@ history/curtis/photos/
 __pycache__/
 .venv/
 
-# Georeferencing working files and outputs (regenerate with history/georef)
-history/georef/work/
-history/georef/output/
+# Georeferencing scratch (regenerate with georef/)
+georef/work/
 
-# Preview app: dependencies and generated web assets
-history/georef/preview/node_modules/
-history/georef/preview/dist/
-history/georef/preview/public/cog/
-history/georef/preview/public/data/
+# GIS outputs: everything in data/ but its README (regenerate with georef/)
+data/*
+!data/README.md
+
+# Web apps: dependencies, builds and generated web assets
+demos/*/node_modules/
+demos/*/dist/
+demos/georef-preview/public/cog/
+demos/georef-preview/public/data/

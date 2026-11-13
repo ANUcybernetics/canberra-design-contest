@@ -1,6 +1,6 @@
 """What was read off the plans by eye, rather than detected.
 
-Everything here was read from the warped plans (output/plans/*-mga55.tif)
+Everything here was read from the warped plans (data/plans/*-mga55.tif)
 on crops drawn with a labelled MGA55 grid, and placed to within about ten
 metres.  Keeping it apart from the code makes plain which parts of the
 styled map are interpretation.  Coordinates are GDA2020 / MGA zone 55.

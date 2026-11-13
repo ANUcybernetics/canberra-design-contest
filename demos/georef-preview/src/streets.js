@@ -1,7 +1,7 @@
-// The streets traced from the 1912 plans (../vectorise.py) over a satellite
+// The streets traced from the 1912 plans (georef/vectorise.py) over a satellite
 // image of Canberra today.  The street layers are listed in
 // /data/streets.json and the plan COGs in /data/plans.json, both made by
-// ../make_web.sh.
+// georef/make_web.sh.
 
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';

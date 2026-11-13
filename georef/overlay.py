@@ -10,7 +10,9 @@ import sys
 import numpy as np
 from PIL import Image
 
-from warp_plans import COMPOSITE, OUT, TMP
+from paths import COMPOSITE, PLAN_COGS
+from plans import DEBUG
+from warp_plans import TMP
 
 Image.MAX_IMAGE_PIXELS = None
 
@@ -44,7 +46,7 @@ def grab(src, bounds, res, out):
 def main():
     name = sys.argv[1]
     res = float(sys.argv[2]) if len(sys.argv) > 2 else 4.0
-    tif = OUT / f"{name}-mga55.tif"
+    tif = PLAN_COGS / f"{name}-mga55.tif"
     if len(sys.argv) > 6:
         bounds = [float(v) for v in sys.argv[3:7]]
     else:
@@ -59,7 +61,8 @@ def main():
     rgb[..., 0] = rgb[..., 0] * (1 - ink) + 255 * ink
     rgb[..., 1] *= 1 - ink
     rgb[..., 2] *= 1 - ink
-    out = TMP.parent / "debug" / "plans" / f"{name}_overlay.jpg"
+    DEBUG.mkdir(parents=True, exist_ok=True)
+    out = DEBUG / f"{name}_overlay.jpg"
     Image.fromarray(rgb.clip(0, 255).astype(np.uint8)).save(out, quality=85)
     print(out)
 

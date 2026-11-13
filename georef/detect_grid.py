@@ -21,7 +21,8 @@ import sys
 import numpy as np
 from PIL import Image, ImageDraw
 
-from sheets import GCP_DIR, SHEET_DIR, SHEETS, WORK
+from paths import GCP_DIR, WORK
+from sheets import SHEET_DIR, SHEETS
 
 Image.MAX_IMAGE_PIXELS = None
 

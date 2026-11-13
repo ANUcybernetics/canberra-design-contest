@@ -30,9 +30,9 @@ import subprocess
 import cv2
 import numpy as np
 
+from paths import PLAN_COGS
 from plans import SRC
-from sheets import WORK
-from warp_plans import EPSG, OUT, TMP
+from warp_plans import EPSG, TMP
 
 FILE = "1912-design-15-gimson-views-nla.obj-233376352.tif"
 NAME = "design-15-gimson-birdseye-approx"
@@ -74,7 +74,7 @@ def main():
     for (x, y), (e, n) in zip(pts, ground):
         gcps += ["-gcp", f"{x:.1f}", f"{y:.1f}", f"{e:.2f}", f"{n:.2f}"]
     TMP.mkdir(parents=True, exist_ok=True)
-    OUT.mkdir(parents=True, exist_ok=True)
+    PLAN_COGS.mkdir(parents=True, exist_ok=True)
     vrt = TMP / f"{NAME}_gcps.vrt"
     subprocess.run(["gdal_translate", "-q", "-of", "VRT", "-a_srs", f"EPSG:{EPSG}", *gcps, str(SRC / FILE), str(vrt)], check=True)
     clip = cv2.perspectiveTransform(np.float32(CLIP_PX)[None], H)[0].tolist()
@@ -117,10 +117,10 @@ def main():
         check=True,
     )
     for suffix, args in (("mga55", ["-of", "COG", "-co", "COMPRESS=JPEG", "-co", "QUALITY=90"]),):
-        out = OUT / f"{NAME}-{suffix}.tif"
+        out = PLAN_COGS / f"{NAME}-{suffix}.tif"
         out.unlink(missing_ok=True)
         subprocess.run(["gdal_translate", "-q", *args, str(warped), str(out)], check=True)
-    web = OUT / f"{NAME}-3857.tif"
+    web = PLAN_COGS / f"{NAME}-3857.tif"
     web.unlink(missing_ok=True)
     subprocess.run(
         [
@@ -145,8 +145,7 @@ def main():
         ],
         check=True,
     )
-    (WORK / "debug" / "plans").mkdir(parents=True, exist_ok=True)
-    print(f"  wrote {OUT / (NAME + '-mga55.tif')}")
+    print(f"  wrote {PLAN_COGS / (NAME + '-mga55.tif')}")
 
 
 if __name__ == "__main__":

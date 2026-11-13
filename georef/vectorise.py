@@ -1,6 +1,6 @@
 """Trace the streets of each warped 1912 plan as centrelines.
 
-Works on the warped plans in output/plans/<plan>-mga55.tif, where every plan
+Works on the warped plans in data/plans/<plan>-mga55.tif, where every plan
 already sits on the 1910 composite, so the survey's own ink can be taken out
 before the streets are looked for.
 
@@ -21,7 +21,7 @@ For each plan:
    constant width along their length.  Fill the short links that join two kept
    edges across an intersection, and prune the stubs.
 5. Simplify and write the centrelines, each with its width in metres, to
-   output/streets/<plan>.geojson (EPSG:7855), plus a debug overlay in
+   data/streets/<plan>.geojson (EPSG:7855), plus a debug overlay in
    work/debug/streets/.
 
 The result is a first draft for correcting by hand in QGIS, not a finished
@@ -44,10 +44,8 @@ from skan import Skeleton
 from skimage.morphology import remove_small_holes, remove_small_objects, skeletonize
 
 from plans import PLANS
-from sheets import HERE, WORK
-from warp_plans import COMPOSITE, OUT
+from paths import COMPOSITE, PLAN_COGS, PLAN_GCP_DIR, ROOT, STREETS, STREETS_GPKG, WORK
 
-STREETS = HERE / "output" / "streets"
 DEBUG = WORK / "debug" / "streets"
 EPSG = 7855
 
@@ -89,7 +87,7 @@ def cfg(name):
 
 
 def read_plan(name, tile=None):
-    src = rasterio.open(OUT / f"{name}-mga55.tif")
+    src = rasterio.open(PLAN_COGS / f"{name}-mga55.tif")
     win = from_bounds(*tile, src.transform).round_offsets().round_lengths() if tile else None
     rgb = src.read([1, 2, 3], window=win)
     tr = src.window_transform(win) if win else src.transform
@@ -541,7 +539,7 @@ def package(stats):
     """One GeoPackage, a layer per design, and a summary for git."""
     import subprocess
 
-    gpkg = HERE / "output" / "streets-1912.gpkg"
+    gpkg = STREETS_GPKG
     for n in stats:
         src = STREETS / f"{n}.geojson"
         mode = ["-update", "-overwrite"] if gpkg.exists() else []
@@ -549,11 +547,11 @@ def package(stats):
             ["ogr2ogr", "-q", "-f", "GPKG", *mode, "-a_srs", f"EPSG:{EPSG}", "-nln", n, str(gpkg), str(src)],
             check=True,
         )
-    path = HERE / "gcps" / "plans" / "streets.json"
+    path = PLAN_GCP_DIR / "streets.json"
     old = json.loads(path.read_text()) if path.exists() else {}
     old.update(stats)
     path.write_text(json.dumps(old, indent=2) + "\n")
-    print(f"wrote {gpkg.relative_to(HERE)} ({len(stats)} layers)")
+    print(f"wrote {gpkg.relative_to(ROOT)} ({len(stats)} layers)")
 
 
 if __name__ == "__main__":
@@ -562,7 +560,7 @@ if __name__ == "__main__":
     ap.add_argument("--debug-scale", type=float)
     ap.add_argument("plans", nargs="*")
     a = ap.parse_args()
-    names = a.plans or [p for p in PLANS if (OUT / f"{p}-mga55.tif").exists() and not cfg(p).get("skip")]
+    names = a.plans or [p for p in PLANS if (PLAN_COGS / f"{p}-mga55.tif").exists() and not cfg(p).get("skip")]
     stats = {}
     for n in names:
         if n not in PLANS:

@@ -1,7 +1,7 @@
 // Preview of the georeferenced 1910 contour survey over OpenStreetMap.
 // The survey is a Web Mercator COG read in the browser by cog.js (from
 // hapmap.app); the grid, sheet outlines and stations are GeoJSON made by
-// ../make_web.sh.
+// georef/make_web.sh.
 
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -136,8 +136,8 @@ HAPMAP.forEach((h) => {
 });
 
 // The 1912 competition plans, georeferenced onto the same survey grid
-// (../warp_plans.py), listed in /data/plans.json by ../make_web.sh.  They sit
-// above the 1910 survey and share one opacity slider.
+// (georef/warp_plans.py), listed in /data/plans.json by georef/make_web.sh.
+// They sit above the 1910 survey and share one opacity slider.
 const PLAN_CREDIT = '1912 competition plans: <a href="https://nla.gov.au/">National Library of Australia</a>';
 const planOpacity = document.getElementById('plan-opacity');
 const planList = document.getElementById('plan-layers');
@@ -160,8 +160,8 @@ map.on('load', async () => {
     });
 });
 
-// Street centrelines traced from each plan (../vectorise.py), listed in
-// /data/streets.json by ../make_web.sh.  One colour per design, drawn above
+// Street centrelines traced from each plan (georef/vectorise.py), listed in
+// /data/streets.json by georef/make_web.sh.  One colour per design, drawn above
 // the plans so they can be checked against the drawing beneath.
 const STREET_COLOURS = ['#d7191c', '#2b83ba', '#1a9641', '#7b3294', '#e66101', '#008837', '#c51b7d', '#4d4d4d', '#b8860b', '#0571b0'];
 map.on('load', async () => {

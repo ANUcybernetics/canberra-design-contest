@@ -26,13 +26,11 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 from detect_grid import intersect, robust_quadratic
-from sheets import GCP_DIR, HERE, WORK
+from paths import PLAN_GCP_DIR, SCANS, WORK
 
 Image.MAX_IMAGE_PIXELS = None
 
-# Plan scans live in history/scans/1912-plans/ (older checkouts: history/).
-SRC = next((d for d in (HERE.parent / "scans" / "1912-plans", HERE.parent) if any(d.glob("1912-design-*"))), HERE.parent)
-PLAN_GCP_DIR = GCP_DIR / "plans"
+SRC = SCANS / "1912-plans"
 DEBUG = WORK / "debug" / "plans"
 GRID_W = [20000 - 2500 * i for i in range(9)]  # left to right
 GRID_S = [2500 * i for i in range(9)]  # top to bottom
