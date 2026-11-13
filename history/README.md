@@ -57,6 +57,7 @@ It gathers the NLA catalogue records, image links and catalogue notes for the ei
 A surveyor's critique of the competition, read to the Institution of Surveyors, N.S.W., on 20 August 1912 and printed in *The Surveyor* of 31 August 1912, with a reply from Charles H. Caswell, co-author of design No. 10.
 Curtis comments on 33 designs; the folder lists each one with his words and the NLA's records for it.
 
+- **Transcription:** [1912-curtis-the-federal-capital-designs.md](transcriptions/1912-curtis-the-federal-capital-designs.md), by Tom Griffiths
 - **Finding list:** [curtis/README.md](curtis/README.md)
 - **Original:** photographed page by page in `curtis/photos/` (not committed).
 
@@ -64,7 +65,7 @@ Curtis comments on 33 designs; the folder lists each one with his words and the 
 
 | Folder | What is in it | In git? |
 | --- | --- | --- |
-| `transcriptions/` | The markdown transcriptions of the three primary sources. | Yes |
+| `transcriptions/` | The markdown transcriptions of the primary sources. | Yes |
 | `thumbnails/1912-plans/` | JPEG thumbnails, 1,200 pixels on the long edge, of each plan scan in `scans/1912-plans/`, under the same names. | Yes |
 | `curtis/` | The finding list for L. A. Curtis's 1912 critique, with the page photographs in `curtis/photos/`. | List yes, photos no |
 | `scans/` | The original scans as downloaded. | No |

@@ -13,6 +13,7 @@ In his words, "the best workable design is relegated to the background, while th
 
 The paper was printed in full in *The Surveyor* of 31 August 1912, followed by a reply from Charles H. Caswell, one of the three authors of No. 10.
 This folder lists every design Curtis names and the National Library of Australia's records for each.
+Tom Griffiths has transcribed the whole article, Caswell's reply included, in [../transcriptions/1912-curtis-the-federal-capital-designs.md](../transcriptions/1912-curtis-the-federal-capital-designs.md).
 
 ## The photographs
 
