@@ -75,6 +75,8 @@ cd preview && pnpm install && pnpm dev
 The preview is a small Vite and MapLibre page on port 5180.
 It reads the COG straight from the file with `src/cog.js`, the `cog://` protocol from hapmap.app, which draws Web Mercator COGs only; hence the separate EPSG:3857 copy, compressed as WebP with an alpha band.
 It has an opacity slider, toggles for the 1910 grid, sheet outlines and stations, and the space bar flicks the old map on and off.
+Beneath the survey you can switch on historical aerial photo mosaics from hapmap.app (1926 MAP3584 and 12 March 1945 MAP1537), read straight from hapmap.app's COGs; add more in the `HAPMAP` list in `preview/src/main.js`.
+The 1926 mosaic only reaches as far east as about 149.116°E, so it covers just the western quarter of the survey.
 To reach it securely across the tailnet, `tailscale serve --bg --https=5181 http://127.0.0.1:5180`, then open `https://<host>.<tailnet>.ts.net:5181/`.
 
 It needs the GDAL command-line tools (`gdal_translate`, `gdalwarp`, `gdalbuildvrt`, `ogr2ogr`) on the path.

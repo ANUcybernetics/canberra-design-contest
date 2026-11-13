@@ -13,6 +13,26 @@ const COG = location.origin + '/cog/contour-survey-1910-3857.tif';
 // Read before the map starts writing its own position into the hash.
 const START_HASH = location.hash;
 
+// Historical aerial photo mosaics from hapmap.app, drawn beneath the survey.
+// Each is a Web Mercator COG read straight from hapmap.app (it allows CORS).
+// To add one, find its item in https://hapmap.app/browse/ and copy the
+// item's `data` asset href.
+const GA_CREDIT = 'Photographs © <a href="https://www.ga.gov.au/scientific-topics/national-location-information/historical-aerial-photography">Geoscience Australia</a>, CC BY 4.0, via <a href="https://hapmap.app">hapmap.app</a>';
+const HAPMAP = [
+    {
+        id: 'hap-1926',
+        label: '1926 (MAP3584)',
+        url: 'https://hapmap.app/web/canberra-1926-map3584-blag-3857.tif',
+        browse: 'https://hapmap.app/browse/#/canberra-1926/canberra-1926-map3584-blag-3857/canberra-1926-map3584-blag-3857.json',
+    },
+    {
+        id: 'hap-1945',
+        label: '12 March 1945 (MAP1537)',
+        url: 'https://hapmap.app/web/canberra-1945-map1537-blag-3857.tif',
+        browse: 'https://hapmap.app/browse/#/canberra-1945/collection.json',
+    },
+];
+
 const map = new maplibregl.Map({
     container: 'map',
     center: [149.125, -35.297],
@@ -39,9 +59,11 @@ const map = new maplibregl.Map({
             grid: { type: 'geojson', data: '/data/grid.geojson' },
             sheets: { type: 'geojson', data: '/data/sheets.geojson' },
             stations: { type: 'geojson', data: '/data/stations.geojson' },
+            ...Object.fromEntries(HAPMAP.map((h) => [h.id, { type: 'raster', url: 'cog://' + h.url, tileSize: 512, attribution: GA_CREDIT }])),
         },
         layers: [
             { id: 'osm', type: 'raster', source: 'osm' },
+            ...HAPMAP.map((h) => ({ id: h.id, type: 'raster', source: h.id, layout: { visibility: 'none' } })),
             { id: 'survey', type: 'raster', source: 'survey', paint: { 'raster-opacity': 0.85, 'raster-resampling': 'linear' } },
             {
                 id: 'sheets', type: 'line', source: 'sheets', layout: { visibility: 'none' },
@@ -103,6 +125,16 @@ function toggle(id, layers) {
         layers.forEach((l) => map.setLayoutProperty(l, 'visibility', box.checked ? 'visible' : 'none'));
     });
 }
+// One checkbox per hapmap layer.
+const hapList = document.getElementById('hapmap-layers');
+HAPMAP.forEach((h) => {
+    const row = document.createElement('label');
+    row.className = 'row';
+    row.innerHTML = `<input id="${h.id}" type="checkbox"> ${h.label} <a href="${h.browse}" target="_blank" rel="noopener" title="Catalogue record">ⓘ</a>`;
+    hapList.appendChild(row);
+    toggle(h.id, [h.id]);
+});
+
 toggle('grid', ['grid']);
 toggle('sheets', ['sheets']);
 toggle('stations', ['stations', 'station-labels']);

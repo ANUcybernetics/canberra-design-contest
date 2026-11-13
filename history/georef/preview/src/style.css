@@ -6,6 +6,8 @@ html, body { margin: 0; height: 100%; font: 14px/1.4 system-ui, sans-serif; back
     padding: 12px 14px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 .panel h1 { font-size: 15px; margin: 0 0 10px; }
+.panel h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #666; margin: 12px 0 4px; }
+.row a { color: #888; text-decoration: none; }
 .row { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
 .row input[type="range"] { flex: 1; }
 .note { margin: 8px 0 0; color: #666; font-size: 12px; }
