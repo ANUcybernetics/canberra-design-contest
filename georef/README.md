@@ -104,7 +104,7 @@ That means they need no new control points: find a plan's grid, and the transfor
 | No. 7 Magonigle (commended): lithograph | 1.04 | 7 | 13 | 18 |
 | No. 10 Griffiths, Coulter & Caswell (minority 1st): original | 0.68 | 0 | 3 | 4 |
 | No. 18 Saarinen (2nd): lithograph | 1.04 | 2 | 5 | 6 |
-| No. 18 Saarinen: lantern slide of original | 1.0 | 4 | 12 | 16 |
+| No. 18 Saarinen: lantern slide of original | 1.0 | 4 | 10 | 16 |
 | No. 29 Griffin (1st): lithograph, copy A | 1.39 | 4 | 10 | 12 |
 | No. 29 Griffin (1st): lithograph, copy B | 0.82 | 6 | 12 | 18 |
 | No. 35 Schanfelberg, Rees & Gummer (commended): lithograph | 1.04 | 8 | 16 | 32 |
