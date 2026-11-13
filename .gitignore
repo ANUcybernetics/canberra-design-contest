@@ -16,7 +16,6 @@ Thumbs.db
 CLAUDE.local.md
 
 # Large source images: fetch them from the URLs in each SOURCE.md
-reference/australian/*.jpg
-reference/french/*.jpg
-reference/gummer/*.jpg
-LetterfromSurveyor/*.jpeg
+demos/cbrsim/reference/australian/*.jpg
+demos/cbrsim/reference/french/*.jpg
+demos/cbrsim/reference/gummer/*.jpg

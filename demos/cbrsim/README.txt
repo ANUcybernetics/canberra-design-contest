@@ -80,14 +80,11 @@ Layout
     visions-plan.md          The original plan for six Canberras on one base:
                              what each scan shows, the technical blockers, and
                              the open decisions. Background for PLAN.md.
-    competition-image-guide.md
-                             Where images of the competition entries are held
-                             (NAA, NLA, NFSA, Bridgeman and others).
 
-  LetterfromSurveyor/        L. A. Curtis's 1912 paper "The Federal Capital
-                             Designs" (The Surveyor, 31 Aug 1912), transcribed in
-                             letter.md from the twelve page photographs. It
-                             argues for entry 10 on grading, drainage and cost.
+  L. A. Curtis's 1912 paper "The Federal Capital Designs", which argues for
+  entry 10 on grading, drainage and cost, is transcribed in
+  history/transcriptions/1912-curtis-the-federal-capital-designs.md at the
+  top of this repository.
 
 How a vision plugs in
 ---------------------
