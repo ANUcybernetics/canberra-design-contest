@@ -40,3 +40,6 @@ demos/georef-preview/public/data/
 demos/cbrsim/reference/australian/*.jpg
 demos/cbrsim/reference/french/*.jpg
 demos/cbrsim/reference/gummer/*.jpg
+
+# Private working notes
+notes/
