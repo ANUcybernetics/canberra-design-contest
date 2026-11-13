@@ -160,6 +160,42 @@ map.on('load', async () => {
     });
 });
 
+// Street centrelines traced from each plan (../vectorise.py), listed in
+// /data/streets.json by ../make_web.sh.  One colour per design, drawn above
+// the plans so they can be checked against the drawing beneath.
+const STREET_COLOURS = ['#d7191c', '#2b83ba', '#1a9641', '#7b3294', '#e66101', '#008837', '#c51b7d', '#4d4d4d', '#b8860b', '#0571b0'];
+map.on('load', async () => {
+    const res = await fetch('/data/streets.json');
+    if (!res.ok) return;
+    const streets = await res.json();
+    const list = document.getElementById('street-layers');
+    streets.forEach((s, i) => {
+        const id = 'streets-' + s.id;
+        map.addSource(id, { type: 'geojson', data: s.geojson });
+        map.addLayer({
+            id, type: 'line', source: id, layout: { visibility: 'none', 'line-cap': 'round', 'line-join': 'round' },
+            paint: {
+                'line-color': STREET_COLOURS[i % STREET_COLOURS.length],
+                'line-width': ['interpolate', ['linear'], ['zoom'], 12, 1, 16, 3],
+            },
+        }, 'sheets');
+        const row = document.createElement('label');
+        row.className = 'row';
+        row.innerHTML = `<input id="${id}" type="checkbox"> <span style="color:${STREET_COLOURS[i % STREET_COLOURS.length]}">━</span> ${s.label} <small>(${s.km} km)</small>`;
+        list.appendChild(row);
+        toggle(id, [id]);
+        map.on('click', id, (e) => {
+            const p = e.features[0].properties;
+            new maplibregl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(`<strong>${s.label}</strong><br>Width ${p.width_m} m (${Math.round(p.width_m / 0.3048)} ft)<br>Edge length ${p.length_m} m`)
+                .addTo(map);
+        });
+        map.on('mouseenter', id, () => { map.getCanvas().style.cursor = 'pointer'; });
+        map.on('mouseleave', id, () => { map.getCanvas().style.cursor = ''; });
+    });
+});
+
 toggle('grid', ['grid']);
 toggle('sheets', ['sheets']);
 toggle('stations', ['stations', 'station-labels']);

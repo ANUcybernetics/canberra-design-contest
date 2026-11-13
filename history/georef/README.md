@@ -67,6 +67,7 @@ uv run python plans.py          # 1912 plans: find their grids
 uv run python warp_plans.py     # ... and warp them
 uv run python match_plans.py    # Saarinen's lantern slide
 uv run python qa_local.py       # check every plan against the 1910 composite
+uv run python vectorise.py      # trace each plan's streets as centrelines
 ```
 
 To look at it over OpenStreetMap, make the web copy and start the preview:
@@ -133,6 +134,71 @@ The working reading is that the view looks south-west from above Reid and Campbe
 The seven points disagree with a single perspective by 162 m RMS (64–272 m), so treat the result as good to a few hundred metres at best, and worse away from the city's near edge.
 It is listed in the preview as approximate, and written to `output/plans/design-15-gimson-birdseye-approx-*.tif`.
 Gimson's own report, transcribed by John Reps, would settle the reading; a scan of the plan itself would replace this entirely.
+
+## Tracing the streets
+
+`vectorise.py` draws each warped plan's streets as centrelines, with a width on every one, and writes them to `output/streets/<plan>.geojson` and `output/streets-1912.gpkg` (one layer per design, EPSG:7855).
+They are automatic first drafts.
+They catch most of the streets on flat ground and miss or invent some on steep ground, so treat them as a start for correcting by hand in QGIS, not as a finished map.
+
+It works on the warped plans rather than the original scans, because there every plan already sits on the 1910 composite, and the survey's own ink can be taken out before the streets are looked for.
+
+1. **Find the ink**: anything darker than the local paper.
+   On No. 10, whose copy of the survey kept its colours, only the black ink counts, so its red contours and blue water drop out at once.
+2. **Take out the survey.**
+   The lithographers redrew the survey's contours by hand, and they wander a few metres from the composite; the script measures that wander in 240 m blocks and shifts the composite's ink to match.
+   Then it compares lines, not areas: both are thinned to one pixel, and a plan pixel is dropped only if it lies within 3.5 m of a survey line *and runs the same way*.
+   A street edge that crosses a contour keeps its pixels at the crossing, which erasing the contours outright did not; on the steep ground, where contours lie 12 m apart, that was the difference between a street grid and nothing.
+3. **Mend the designer's lines**: join line ends that face each other across a short gap, and trace straight runs of ink across whatever the survey still breaks.
+4. **Find the streets.**
+   The paper between the designer's lines holds the streets, but also parks, open country and lots.
+   Its skeleton is a graph, and along each edge the distance to the nearest line is half the width of the space.
+   An edge is kept if it is 10–64 m wide and its width varies by no more than a quarter along its length; short links across intersections are kept between kept edges, and stubs and isolated fragments are dropped.
+   Enclosed pieces of paper smaller than 2,500 m² are lots or courtyards, not streets.
+5. **Simplify** each centreline to within about 1.5 pixels and write it out.
+
+Bérard's sheet is different: his streets are pale bands on a dark wash.
+For it the script takes a white top-hat (what is brighter than its surroundings and narrower than 80 m), thresholds it by Otsu's method, fills the holes left by lettering and drops the pale specks in the mottled wash.
+
+Saarinen's lantern slide is skipped; his lithograph shows the same design more sharply.
+The survey's title block and NOTES panel, Bérard's cartouche and Saarinen's legend are never traced (`EXCLUDE` and the per-plan `exclude` boxes).
+
+| Plan | Centreline (km) | How it looks |
+| --- | --- | --- |
+| No. 4 Agache: lithograph, sewerage | 310 | The noisiest: the sewer lines and the hatching are traced along with the streets. |
+| No. 7 Magonigle: lithograph | 281 | The northern and southern grids, and the diagonal grid to the south-east, traced well. |
+| No. 10 Griffiths, Coulter & Caswell: original | 298 | Most streets; strips between faint lot lines pass for lanes. |
+| No. 18 Saarinen: lithograph | 318 | Radial and ring streets well traced; hatched grounds traced as rows of false streets. |
+| No. 29 Griffin: lithograph, copy A | 307 | Much as copy B. |
+| No. 29 Griffin: lithograph, copy B | 292 | Grids on flat ground good; broken on the steepest slopes. |
+| No. 35 Schanfelberg, Rees & Gummer: lithograph | 266 | Dense grids traced well. |
+| No. 37 Bérard: streets plan | 159 | Main avenues and the street network clean; spurs where the photograph's wash is pale. |
+| No. 41 Comey: lithograph | 318 | Nearly the whole network traced. |
+| No. 81 Gellerstedt: lithograph | 338 | Ring and radial streets traced; building outlines add short false streets. |
+
+The totals include false streets, so do not compare designs by them until the drafts are corrected.
+
+```sh
+uv run python vectorise.py                       # every plan, about 1–2 minutes each
+uv run python vectorise.py design-37-berard      # one plan
+uv run python vectorise.py --tile 693700 6092500 694500 6093300 design-29-griffin-copyB   # one 800 m test tile
+```
+
+Debug overlays land in `work/debug/streets/`: the plan washed out, the designer's ink in dark grey, the survey's lines that were taken out in pale blue, kept centrelines in red and rejected skeleton edges in pale green.
+A `--tile` run puts the original beside it.
+The length traced for each plan is in `gcps/plans/streets.json`.
+`make_web.sh` copies the centrelines into the preview, where each design has a checkbox and a click on a street gives its width.
+
+### What goes wrong
+
+- **Streets that follow the contours.** Where a designer ran a street along a hillside within a few metres of a contour, the script takes the street's edge for the contour and loses it. Griffin's and Comey's terraced streets suffer most.
+- **Faint lot lines.** Where a block's lot lines are too faint to count as ink, the strips between them pass for lanes (No. 10, in places).
+- **Lanes within blocks.** Griffin drew many blocks as a pair of rectangles with a gap between; the gap is traced as a lane, which may well be what he meant.
+- **Wide open ground.** Next to parks and open country, the space between a block and a nearby line can look like a street.
+- **Lettering in the street.** Large lettering laid along a street can break the centreline into pieces.
+- **Hatching.** Evenly spaced hatching (Saarinen's parks and public grounds) makes rows of strips of constant width, which pass for streets.
+- **Railways.** A railway drawn as parallel lines is traced like a street.
+- **The sheet's edge.** On some sheets the strip between the neatline and the edge of the scan is traced as a street.
 
 ## Things to know
 

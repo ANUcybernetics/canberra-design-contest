@@ -10,9 +10,14 @@
   Ten were registered from their own 2,500 ft grid; Saarinen's lantern slide by matching it to his lithograph.
   Checked against the 1910 composite: no plan is offset overall; the lithographs wander locally by a median of 2–8 m, up to 32 m.
 - Placed Gimson's No. 15 bird's-eye view approximately (`history/georef/gimson.py`): a perspective view, not a plan, so good only to a few hundred metres.
+- Traced the streets of ten plans as centrelines with widths (`history/georef/vectorise.py`), into `output/streets-1912.gpkg` and the preview.
+  The survey's contours are removed line by line (near and parallel), so street edges survive where contours cross them; Bérard's pale streets are found with a top-hat filter.
+  These are automatic first drafts: good on flat ground (Comey's is nearly complete), weaker on steep ground, and fooled by hatching, faint lot lines and railways.
 
 ## Next
 
+- Correct the street drafts by hand in QGIS, starting with the six shortlisted designs; mark edited features `source = "hand"`.
+- Consider teaching the street tracer to recognise hatching (Saarinen) and railways, or train a small segmentation model on the corrected drafts.
 - Next NLA visit: get and scan the items in `history/nla-visit-list.md`, starting with Bérard's streets plan and Gimson's plan.
 - Find the inside pages of the 1911 conditions booklet.
 - Consider evening out the paper tone between the four sheets in the composite.

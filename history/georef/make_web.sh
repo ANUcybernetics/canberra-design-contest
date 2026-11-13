@@ -49,3 +49,27 @@ if Path(f"output/plans/{g}-3857.tif").exists():
 Path("preview/public/data/plans.json").write_text(json.dumps(out, indent=1))
 print(f"{len(out)} plans listed for the preview")
 PY
+
+# Street centrelines traced by vectorise.py: WGS84 copies for the preview.
+mkdir -p "$DATA/streets"
+rm -f "$DATA/streets/"*.geojson
+for f in output/streets/design-*.geojson; do
+  [ -e "$f" ] || continue
+  case "$f" in *-tile.geojson) continue ;; esac
+  ogr2ogr -f GeoJSON -s_srs EPSG:7855 -t_srs EPSG:4326 -lco COORDINATE_PRECISION=7 \
+    "$DATA/streets/$(basename "$f")" "$f"
+done
+uv run python - <<'PY'
+import json
+from pathlib import Path
+from plans import PLANS
+out = []
+for name, spec in PLANS.items():
+    f = Path(f"preview/public/data/streets/{name}.geojson")
+    if f.exists():
+        feats = json.loads(f.read_text())["features"]
+        km = round(sum(x["properties"]["length_m"] for x in feats) / 1000)
+        out.append({"id": name, "label": spec["label"], "geojson": f"/data/streets/{name}.geojson", "km": km})
+Path("preview/public/data/streets.json").write_text(json.dumps(out, indent=1))
+print(f"{len(out)} street layers listed for the preview")
+PY

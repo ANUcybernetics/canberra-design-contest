@@ -1,0 +1,42 @@
+{
+  "design-04-agache-sewerage": {
+    "edges": 4989,
+    "km": 310.4
+  },
+  "design-07-magonigle": {
+    "edges": 5253,
+    "km": 280.6
+  },
+  "design-10-griffiths-coulter-caswell": {
+    "edges": 4348,
+    "km": 298.2
+  },
+  "design-18-saarinen": {
+    "edges": 5931,
+    "km": 317.9
+  },
+  "design-29-griffin-copyA": {
+    "edges": 4392,
+    "km": 307.1
+  },
+  "design-29-griffin-copyB": {
+    "edges": 3951,
+    "km": 291.7
+  },
+  "design-35-schanfelberg-rees-gummer": {
+    "edges": 4795,
+    "km": 265.8
+  },
+  "design-37-berard": {
+    "edges": 2820,
+    "km": 158.9
+  },
+  "design-41-comey": {
+    "edges": 5061,
+    "km": 317.8
+  },
+  "design-81-gellerstedt": {
+    "edges": 5791,
+    "km": 338.0
+  }
+}
