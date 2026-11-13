@@ -191,6 +191,47 @@ The length traced for each plan is in `gcps/plans/streets.json`.
 A second page, `preview/streets.html`, draws them over a satellite image of Canberra today (Esri World Imagery), with the plan beneath on a slider and an option to draw each street at its traced width.
 Run it alongside the first with `pnpm dev --port 5182` and open `/streets.html`; across the tailnet, `tailscale serve --bg --https=5183 http://127.0.0.1:5182`.
 
+### Repairing the networks
+
+`repair.py` mends the traced networks and writes `output/streets/<plan>-repaired.geojson`, plus a `<plan>-repaired` layer in `output/streets-1912.gpkg`.
+Each feature records what was done to it: `source` is `traced` or `avenue`, and `fit` is `line` or `arc` where a street was refitted.
+Every step is plain geometry, checked against the plan's own ink, and the whole run takes under a minute a plan.
+
+1. **Avenues.** An avenue with a planted median is traced as a ladder of small loops, one round each island. Chains of loops under 3,000 m² that are at least three times as long as they are wide become a single centreline, fitted as a line or arc through the islands, with the avenue's full width and `median: planted`; the side streets are carried to it.
+2. **Wide roads that go nowhere.** A run of road 35 m or wider that ends in a dead end and joins the network at most once is usually open ground beside a single line. The script walks along it every 8 m, looking for a drawn line *parallel to it* on both sides, and drops the run if fewer than 40% of the stations find both.
+3. **Junctions.** A skeleton splits a crossroads into two junctions joined by a short link. Links shorter than the widest street there are merged, unless (for links over half that width) the streets either side fail to line up, which marks a staggered junction. Each junction then moves to the point nearest the straight lines of the streets that meet there, measured beyond the stretch the junction distorts.
+4. **Strokes.** Edges that run on through a junction, turning less than 25°, are chained into the street the designer drew, and each chain is refitted as a straight line or circular arc. A fit must stay within 1.5 m RMS (or 8% of the width) of the trace, and keep at least a third of its half-width clear of the plan's linework along 90% of its length; otherwise the chain is split at a junction and its halves tried again. A straight line is preferred unless an arc fits much better. Junctions then move to where the fitted streets cross.
+
+| Plan | Turning (°/km), before → after | Junctions | Dead ends |
+| --- | --- | --- | --- |
+| No. 4 Agache (3rd) | 912 → 438 | 669 → 574 | 2418 → 2043 |
+| No. 7 Magonigle (commended) | 828 → 308 | 1335 → 994 | 1337 → 1198 |
+| No. 10 Griffiths, Coulter & Caswell (minority 1st) | 752 → 289 | 1354 → 964 | 1106 → 1014 |
+| No. 18 Saarinen (2nd) | 835 → 331 | 1261 → 1020 | 1960 → 1808 |
+| No. 29 Griffin (1st), copy A | 663 → 254 | 1013 → 798 | 1444 → 1285 |
+| No. 29 Griffin (1st), copy B | 783 → 244 | 836 → 688 | 1482 → 1344 |
+| No. 35 Schanfelberg, Rees & Gummer (commended) | 886 → 384 | 656 → 562 | 2350 → 2193 |
+| No. 37 Bérard | 1117 → 347 | 446 → 377 | 1185 → 1050 |
+| No. 41 Comey (minority 2nd) | 747 → 289 | 1362 → 1082 | 1580 → 1395 |
+| No. 81 Gellerstedt (minority 3rd) | 903 → 411 | 883 → 770 | 2503 → 2272 |
+
+"Turning" is the total change of direction along the streets per kilometre, a measure of wiggle; a ruled street scores nothing.
+The full figures are in `gcps/plans/repair.json`.
+
+```sh
+uv run python repair.py                         # every traced plan
+uv run python repair.py --compare design-10-griffiths-coulter-caswell 693929,6093879 693420,6090560
+```
+
+`--compare` draws the trace and the repair side by side at each MGA55 point, into `work/debug/repair/<plan>-compare.jpg`: avenues green, streets refitted as lines red, as arcs purple, untouched blue.
+The preview uses the repaired streets, and the styled map has a checkbox to show them as first traced.
+
+What it does not yet do:
+
+- **Join cut streets.** A street broken by lettering or a lost line stays broken; this is the step the plan sets aside for a vision model to judge.
+- **Tell a crossing from a turn.** Where two different streets meet at a shallow angle, chaining can join them into one stroke and fit a curve across the junction (seen once on Griffin's plan, across the railway).
+- **Clear false lanes.** Strips between faint lot lines, and Griffin's lanes between paired blocks, are left as they are.
+
 ### A modern street map of No. 10
 
 `mapstyle.py` turns a traced plan into the layers of a modern street map, and `preview/styled.html` draws them in the manner of Google Maps.

@@ -160,18 +160,29 @@ def demote_short(src, cls, lower, min_m):
             src[i]["class"] = lower
 
 
-def roads(name):
+def roads(name, repaired=True):
+    """Road features, from the repaired network (repair.py) if there is one."""
+    path = STREETS / f"{name}-repaired.geojson"
+    if not (repaired and path.exists()):
+        path = STREETS / f"{name}.geojson"
     src = []
-    for f in json.loads((STREETS / f"{name}.geojson").read_text())["features"]:
-        w = f["properties"]["width_m"]
-        cs = f["geometry"]["coordinates"]
-        src.append({"coords": cs, "width": w, "class": road_class(w), "length": f["properties"]["length_m"]})
-    demote_short(src, "boulevard", "avenue", 400)
+    for f in json.loads(path.read_text())["features"]:
+        p = f["properties"]
+        w = p["width_m"]
+        cls = road_class(w)
+        if p.get("median") == "planted":
+            cls = "boulevard"  # an avenue with a planted median is the grandest street there is
+        src.append({"coords": f["geometry"]["coordinates"], "width": w, "class": cls, "length": p["length_m"], "median": p.get("median")})
+    demote_short([r for r in src if not r["median"]], "boulevard", "avenue", 400)
     feats, lines = [], []
     for r in src:
+        # Fitted streets are already smooth; Chaikin only rounds what was traced.
         geom = LineString(chaikin(r["coords"]))
         lines.append((geom, r["width"]))
-        feats.append({"type": "Feature", "geometry": to_wgs84(mapping(geom)), "properties": {"class": r["class"], "width_m": r["width"]}})
+        props = {"class": r["class"], "width_m": r["width"]}
+        if r["median"]:
+            props["median"] = r["median"]
+        feats.append({"type": "Feature", "geometry": to_wgs84(mapping(geom)), "properties": props})
     return feats, lines
 
 
@@ -256,6 +267,7 @@ def run(name):
     c = cfg(name)
     road_feats, lines = roads(name)
     write(name, "roads", road_feats)
+    write(name, "roads-raw", roads(name, repaired=False)[0])
     rgb, tr = read_grid(name)
     h, w = rgb.shape[:2]
     live = rgb.max(axis=2) > 20

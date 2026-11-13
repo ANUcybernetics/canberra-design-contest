@@ -55,6 +55,14 @@ for (const [cls, minzoom, , fill] of ROADS) {
     });
 }
 
+// A planted median down the middle of an avenue: a green strip a third of
+// the road's width, from zoom 14.
+roadLayers.push({
+    id: 'median', type: 'line', source: 'roads', minzoom: 14, filter: ['==', ['get', 'median'], 'planted'],
+    layout: { 'line-cap': 'butt', 'line-join': 'round' },
+    paint: { 'line-color': '#a8d5a2', 'line-width': widths([14, 1, 16, 4, 18, 12, 20, 44]) },
+});
+
 const label = (kind, colour, halo, size) => ({
     id: `label-${kind}`, type: 'symbol', source: 'labels', filter: ['==', ['get', 'kind'], kind],
     layout: {
@@ -113,6 +121,10 @@ map.on('load', async () => {
     }
     document.getElementById('plan-opacity').addEventListener('input', (e) => {
         if (map.getLayer('plan')) map.setPaintProperty('plan', 'raster-opacity', Number(e.target.value));
+    });
+    // Before and after repair.py: swap the roads' data.
+    document.getElementById('as-traced').addEventListener('change', (e) => {
+        map.getSource('roads').setData(`${DATA}/${e.target.checked ? 'roads-raw' : 'roads'}.geojson`);
     });
     document.getElementById('satellite').addEventListener('change', (e) => {
         const on = e.target.checked;

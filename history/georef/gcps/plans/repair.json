@@ -1,0 +1,232 @@
+{
+  "design-10-griffiths-coulter-caswell": {
+    "before": {
+      "edges": 4208,
+      "km": 293.7,
+      "dead_ends": 1106,
+      "junctions": 1354,
+      "turning_deg_per_km": 752.0
+    },
+    "after": {
+      "edges": 3662,
+      "km": 281.6,
+      "dead_ends": 1014,
+      "junctions": 964,
+      "turning_deg_per_km": 289.0
+    },
+    "steps": {
+      "avenues": 13,
+      "wide_dropped": 67,
+      "links_merged": 274,
+      "junctions_moved": 933,
+      "strokes_fitted": 2191
+    }
+  },
+  "design-29-griffin-copyB": {
+    "before": {
+      "edges": 3825,
+      "km": 290.3,
+      "dead_ends": 1482,
+      "junctions": 836,
+      "turning_deg_per_km": 783.0
+    },
+    "after": {
+      "edges": 3510,
+      "km": 273.7,
+      "dead_ends": 1344,
+      "junctions": 688,
+      "turning_deg_per_km": 244.0
+    },
+    "steps": {
+      "avenues": 0,
+      "wide_dropped": 139,
+      "links_merged": 138,
+      "junctions_moved": 677,
+      "strokes_fitted": 2211
+    }
+  },
+  "design-04-agache-sewerage": {
+    "before": {
+      "edges": 4970,
+      "km": 308.7,
+      "dead_ends": 2418,
+      "junctions": 669,
+      "turning_deg_per_km": 912.0
+    },
+    "after": {
+      "edges": 4489,
+      "km": 269.9,
+      "dead_ends": 2043,
+      "junctions": 574,
+      "turning_deg_per_km": 438.0
+    },
+    "steps": {
+      "avenues": 0,
+      "wide_dropped": 302,
+      "links_merged": 76,
+      "junctions_moved": 550,
+      "strokes_fitted": 2959
+    }
+  },
+  "design-07-magonigle": {
+    "before": {
+      "edges": 5141,
+      "km": 278.6,
+      "dead_ends": 1337,
+      "junctions": 1335,
+      "turning_deg_per_km": 828.0
+    },
+    "after": {
+      "edges": 4658,
+      "km": 265.4,
+      "dead_ends": 1198,
+      "junctions": 994,
+      "turning_deg_per_km": 308.0
+    },
+    "steps": {
+      "avenues": 1,
+      "wide_dropped": 126,
+      "links_merged": 320,
+      "junctions_moved": 963,
+      "strokes_fitted": 2837
+    }
+  },
+  "design-18-saarinen": {
+    "before": {
+      "edges": 5868,
+      "km": 315.9,
+      "dead_ends": 1960,
+      "junctions": 1261,
+      "turning_deg_per_km": 835.0
+    },
+    "after": {
+      "edges": 5484,
+      "km": 303.1,
+      "dead_ends": 1808,
+      "junctions": 1020,
+      "turning_deg_per_km": 331.0
+    },
+    "steps": {
+      "avenues": 3,
+      "wide_dropped": 116,
+      "links_merged": 209,
+      "junctions_moved": 978,
+      "strokes_fitted": 3471
+    }
+  },
+  "design-29-griffin-copyA": {
+    "before": {
+      "edges": 4314,
+      "km": 305.7,
+      "dead_ends": 1444,
+      "junctions": 1013,
+      "turning_deg_per_km": 663.0
+    },
+    "after": {
+      "edges": 3931,
+      "km": 289.8,
+      "dead_ends": 1285,
+      "junctions": 798,
+      "turning_deg_per_km": 254.0
+    },
+    "steps": {
+      "avenues": 0,
+      "wide_dropped": 141,
+      "links_merged": 206,
+      "junctions_moved": 788,
+      "strokes_fitted": 2492
+    }
+  },
+  "design-35-schanfelberg-rees-gummer": {
+    "before": {
+      "edges": 4717,
+      "km": 263.9,
+      "dead_ends": 2350,
+      "junctions": 656,
+      "turning_deg_per_km": 886.0
+    },
+    "after": {
+      "edges": 4469,
+      "km": 249.8,
+      "dead_ends": 2193,
+      "junctions": 562,
+      "turning_deg_per_km": 384.0
+    },
+    "steps": {
+      "avenues": 3,
+      "wide_dropped": 120,
+      "links_merged": 73,
+      "junctions_moved": 547,
+      "strokes_fitted": 2885
+    }
+  },
+  "design-37-berard": {
+    "before": {
+      "edges": 2788,
+      "km": 157.9,
+      "dead_ends": 1185,
+      "junctions": 446,
+      "turning_deg_per_km": 1117.0
+    },
+    "after": {
+      "edges": 2519,
+      "km": 142.3,
+      "dead_ends": 1050,
+      "junctions": 377,
+      "turning_deg_per_km": 347.0
+    },
+    "steps": {
+      "avenues": 0,
+      "wide_dropped": 133,
+      "links_merged": 64,
+      "junctions_moved": 371,
+      "strokes_fitted": 1617
+    }
+  },
+  "design-41-comey": {
+    "before": {
+      "edges": 5016,
+      "km": 316.1,
+      "dead_ends": 1580,
+      "junctions": 1362,
+      "turning_deg_per_km": 747.0
+    },
+    "after": {
+      "edges": 4551,
+      "km": 297.2,
+      "dead_ends": 1395,
+      "junctions": 1082,
+      "turning_deg_per_km": 289.0
+    },
+    "steps": {
+      "avenues": 1,
+      "wide_dropped": 165,
+      "links_merged": 250,
+      "junctions_moved": 1046,
+      "strokes_fitted": 2927
+    }
+  },
+  "design-81-gellerstedt": {
+    "before": {
+      "edges": 5744,
+      "km": 336.0,
+      "dead_ends": 2503,
+      "junctions": 883,
+      "turning_deg_per_km": 903.0
+    },
+    "after": {
+      "edges": 5403,
+      "km": 313.3,
+      "dead_ends": 2272,
+      "junctions": 770,
+      "turning_deg_per_km": 411.0
+    },
+    "steps": {
+      "avenues": 1,
+      "wide_dropped": 186,
+      "links_merged": 88,
+      "junctions_moved": 741,
+      "strokes_fitted": 3448
+    }
+  }
+}

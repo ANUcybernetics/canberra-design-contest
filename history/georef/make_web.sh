@@ -55,9 +55,12 @@ mkdir -p "$DATA/streets"
 rm -f "$DATA/streets/"*.geojson
 for f in output/streets/design-*.geojson; do
   [ -e "$f" ] || continue
-  case "$f" in *-tile.geojson) continue ;; esac
+  case "$f" in *-tile.geojson|*-repaired.geojson) continue ;; esac
+  # The repaired network (repair.py) if there is one, else the trace.
+  src="${f%.geojson}-repaired.geojson"
+  [ -e "$src" ] || src="$f"
   ogr2ogr -f GeoJSON -s_srs EPSG:7855 -t_srs EPSG:4326 -lco COORDINATE_PRECISION=7 \
-    "$DATA/streets/$(basename "$f")" "$f"
+    "$DATA/streets/$(basename "$f")" "$src"
 done
 uv run python - <<'PY'
 import json
