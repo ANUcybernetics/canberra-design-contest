@@ -22,7 +22,7 @@ transcribed: 2026-11-08
 
 *Read at a Meeting of the Institution of Surveyors, N.S.W., by the President, Mr. L. A. Curtis, on Tuesday, August 20th, 1912.*
 
-**Source:** *The Surveyor*, August 31, 1912, pp. 165–176; transcribed by Tom Griffiths from his own photographs of the twelve pages, which are not kept here. The same pages are photographed in `../curtis/photos/` and listed in [../curtis/README.md](../curtis/README.md). The first page number is inferred from the following numbered pages.
+**Source:** *The Surveyor*, August 31, 1912, pp. 165–176; transcribed by Tom Griffiths from photographs of the twelve pages, which are not kept here. The same pages are photographed in `../curtis/photos/` and listed in [../curtis/README.md](../curtis/README.md). The first page number is inferred from the following numbered pages.
 
 *Transcription note: The paper and its subsequent discussion are transcribed below. Unrelated material before and after the article, running page headers, and page numbers are omitted. Paragraphs and words split across lines or pages have been joined. Original wording and spelling are retained, with typographic spacing normalised.*
 
