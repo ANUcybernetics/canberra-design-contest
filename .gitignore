@@ -14,3 +14,7 @@ Thumbs.db
 # Claude
 .claude/
 CLAUDE.local.md
+
+# Source scans (large binaries; see history/README.md for links)
+history/*.tif
+history/*.zip
