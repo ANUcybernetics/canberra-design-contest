@@ -18,3 +18,11 @@ CLAUDE.local.md
 # Source scans (large binaries; see history/README.md for links)
 history/*.tif
 history/*.zip
+
+# Python
+__pycache__/
+.venv/
+
+# Georeferencing working files and outputs (regenerate with history/georef)
+history/georef/work/
+history/georef/output/

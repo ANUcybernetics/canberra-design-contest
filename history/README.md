@@ -14,13 +14,15 @@ They are listed in the order the competition unfolded: the survey of the site, t
 
 The official survey of the city site, issued to every competitor.
 Most of the entries were drawn directly on top of it.
-We have Sheet No. 1 of 4, which covers the Molonglo River below Black Mountain.
+It comes in four sheets; we have all four, and have stitched them into one georeferenced image.
 
 - **Transcription:** [1910-contour-survey-map-sheet-1.md](1910-contour-survey-map-sheet-1.md)
 - **Original:** National Library of Australia, [nla.obj-232175459](https://nla.gov.au/nla.obj-232175459)
 - **Made by:** drawn on stone by O. Fischer and A.G. von Stach under the direction of E.S. Vautin; lithograph no. 10.483 D.
 - **Copyright:** out of copyright (published 1910), according to the NLA.
-- **Note:** the transcription records the printed words on the map and describes the sheet; it does not reproduce the contour heights.
+- **All four sheets:** National Library of Australia, [nla.obj-232175445](https://nla.gov.au/nla.obj-232175445).
+- **Georeferenced composite:** see [georef/](georef/README.md), which builds a GeoTIFF of all four sheets in GDA2020 / MGA zone 55 for QGIS.
+- **Note:** the transcription records the printed words on Sheet 1 and describes the sheet; it does not reproduce the contour heights.
 
 ### 2. Information, Conditions and Particulars for Guidance in the Preparation of Competitive Designs for the Federal Capital City of the Commonwealth of Australia (1911)
 
@@ -52,10 +54,10 @@ The scans we downloaded sit beside the transcriptions but are not committed to g
 | `nla.obj-232175459.zip` | NLA download of the contour map: a JPEG and the NLA copyright note. |
 | `nla.obj-232175459.tif` | Full-resolution TIFF of the same map sheet (about 240 MB). |
 | `nla.obj-232173787 (1).zip` | NLA download of the conditions booklet cover: a JPEG and the NLA copyright note. |
+| `nla.obj-232175445.zip` | NLA download of all four contour map sheets: five JPEGs (the second repeats the first) and the copyright note. |
 
 The ParlInfo PDF is not kept here; download it from the link above.
 
 ## Still to find
 
 - The inside pages of the 1911 conditions booklet.
-- Sheets 2, 3 and 4 of the contour survey map.
