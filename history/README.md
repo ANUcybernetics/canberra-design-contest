@@ -62,6 +62,10 @@ The scans we downloaded sit beside the transcriptions but are not committed to g
 | `nla.obj-232175459.tif` | Full-resolution TIFF of the same map sheet (about 240 MB). |
 | `nla.obj-232173787 (1).zip` | NLA download of the conditions booklet cover: a JPEG and the NLA copyright note. |
 | `nla.obj-232175445.zip` | NLA download of all four contour map sheets: five JPEGs (the second repeats the first) and the copyright note. |
+| `1912-design-NN-*-nla.obj-*.tif` | Full-resolution NLA master TIFFs of the plan drawings for the significant entries (40–310 MB each). The design number and designer are in the name; see [1912-significant-entries-nla.md](1912-significant-entries-nla.md) for each record. |
+| `1912-design-NN-*-nla.obj-*.jpg` | The two plans with no downloadable master: Griffin's copy A and Saarinen's lantern slide, each at the largest JPEG the NLA serves. |
+
+The plan TIFFs come from `https://nla.gov.au/tarkine/nla.obj-<id>/m`, the link behind the NLA viewer's "TIF (high resolution)" download.
 
 The ParlInfo PDF is not kept here; download it from the link above.
 

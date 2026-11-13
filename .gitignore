@@ -18,6 +18,7 @@ CLAUDE.local.md
 # Source scans (large binaries; see history/README.md for links)
 history/*.tif
 history/*.zip
+history/*.jpg
 
 # Python
 __pycache__/
