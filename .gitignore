@@ -35,3 +35,8 @@ demos/*/node_modules/
 demos/*/dist/
 demos/georef-preview/public/cog/
 demos/georef-preview/public/data/
+
+# Tom's large NLA scans for the sim: fetch them from the URLs in each SOURCE.md
+demos/cbrsim/reference/australian/*.jpg
+demos/cbrsim/reference/french/*.jpg
+demos/cbrsim/reference/gummer/*.jpg

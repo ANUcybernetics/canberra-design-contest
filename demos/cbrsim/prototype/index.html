@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canberra Visions</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #b3c7e0; font: 14px/1.4 Georgia, serif; }
+  canvas#app { display: block; width: 100%; height: 100%; }
+  .panel { position: fixed; background: rgba(250, 246, 236, 0.88); color: #2b2a28; border-radius: 6px; padding: 10px 14px; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  #help { top: 12px; left: 12px; max-width: 290px; }
+  #help h1 { font-size: 17px; margin: 0 0 4px; }
+  #help p { margin: 4px 0; }
+  #help kbd { font: 12px ui-monospace, monospace; background: #e8e2d4; border-radius: 3px; padding: 0 4px; }
+  .hidden { display: none; }
+  #place { bottom: 16px; left: 50%; transform: translateX(-50%); font-size: 18px; }
+  #place:empty { display: none; }
+  #flash { top: 40%; left: 50%; transform: translateX(-50%); font-size: 22px; opacity: 0; transition: opacity .6s; pointer-events: none; }
+  #minimap { position: fixed; right: 12px; bottom: 12px; width: 260px; border: 2px solid #fff; border-radius: 4px; cursor: crosshair; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+  #stats { position: fixed; top: 12px; right: 12px; background: rgba(20,20,20,.7); color: #eee; font: 12px/1.5 ui-monospace, monospace; padding: 6px 10px; border-radius: 4px; white-space: pre; }
+  #status { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+  body.clean .panel, body.clean #minimap { display: none; }
+  #settings { bottom: 12px; left: 12px; font-size: 13px; }
+  #settings label { display: block; margin: 2px 0; cursor: pointer; }
+  #settings input[type=range] { width: 170px; vertical-align: middle; }
+  #paper { position: fixed; inset: 0; pointer-events: none; mix-blend-mode: multiply; opacity: 0; transition: opacity .4s; }
+  body.watercolour #paper { opacity: 0.9; }
+  #joy { display: none; position: fixed; left: 28px; bottom: 28px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,.25); border: 2px solid rgba(255,255,255,.6); touch-action: none; }
+  #knob { position: absolute; left: 35px; top: 35px; width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,.8); }
+  .flybtn { display: none; position: fixed; right: 290px; width: 56px; height: 56px; border-radius: 50%; border: 0; background: rgba(255,255,255,.6); font-size: 22px; touch-action: none; }
+  .flybtn:nth-of-type(1) { bottom: 100px; } .flybtn:nth-of-type(2) { bottom: 30px; }
+  body.touch #joy, body.touch .flybtn { display: block; }
+  body.touch #settings { bottom: auto; top: 12px; left: auto; right: 12px; }
+  body.touch canvas#app { touch-action: none; }
+</style>
+</head>
+<body>
+<canvas id="app"></canvas>
+<div id="help" class="panel">
+  <h1>Canberra</h1>
+  <p id="blurb"></p>
+  <p><kbd>Click</kbd> to look around · <kbd>WASD</kbd> to move · <kbd>Shift</kbd> to run<br>
+  <kbd>F</kbd> to fly (<kbd>E</kbd>/<kbd>Q</kbd> up and down) · <kbd>1</kbd>–<kbd id="nviews">9</kbd> viewpoints<br>
+  Click the plan to jump there · <kbd>H</kbd> hides this panel · <kbd>P</kbd> shows performance stats<br>
+  <kbd>[</kbd>/<kbd>]</kbd> time of day · <kbd>T</kbd> lets time pass · <kbd>R</kbd> reflections · <kbd>O</kbd> ambient occlusion · <kbd>V</kbd> watercolour · <kbd>M</kbd> sound</p>
+  <p>On a tablet: joystick to move, drag to look, ▲▼ to fly.</p>
+</div>
+<div id="place" class="panel"></div>
+<div id="flash" class="panel"></div>
+<div id="stats" class="hidden"></div>
+<div id="status" class="panel">Building the city…</div>
+<canvas id="minimap" width="260"></canvas>
+<div id="paper"></div>
+<div id="settings" class="panel">
+  <label>Vision <select id="vision"></select></label>
+  <label>Time <input id="hour" type="range" min="4.5" max="21" step="0.1"> <span id="hourLabel"></span></label>
+  <label><input id="t-reflections" type="checkbox"> Lake reflections</label>
+  <label><input id="t-ssao" type="checkbox"> Ambient occlusion</label>
+  <label><input id="t-watercolour" type="checkbox"> Watercolour</label>
+</div>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
