@@ -10,5 +10,5 @@ export default defineConfig({
     },
     worker: { format: 'es' },
     // Two pages: the survey preview, and the traced streets over satellite imagery.
-    build: { rollupOptions: { input: { main: 'index.html', streets: 'streets.html' } } },
+    build: { rollupOptions: { input: { main: 'index.html', streets: 'streets.html', styled: 'styled.html' } } },
 });

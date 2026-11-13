@@ -191,6 +191,24 @@ The length traced for each plan is in `gcps/plans/streets.json`.
 A second page, `preview/streets.html`, draws them over a satellite image of Canberra today (Esri World Imagery), with the plan beneath on a slider and an option to draw each street at its traced width.
 Run it alongside the first with `pnpm dev --port 5182` and open `/streets.html`; across the tailnet, `tailscale serve --bg --https=5183 http://127.0.0.1:5182`.
 
+### A modern street map of No. 10
+
+`mapstyle.py` turns a traced plan into the layers of a modern street map, and `preview/styled.html` draws them in the manner of Google Maps.
+It is done for No. 10, the only plan with a colour wash and lettered names to work from; `?plan=<id>` shows another design's streets in the same style, without water or labels.
+
+- **Roads** are smoothed and classed by their traced width: boulevards over 40 m (in yellow), avenues of 28–40 m, streets of 16–28 m and lanes. A run of boulevard shorter than 400 m in all is taken for open ground beside a street and drawn as an avenue.
+- **Water** is whatever the designers' blue shore wash encloses. The wash lies on the water side of every shore, so gaps of up to 180 m in it are bridged, the pieces it then encloses are filled, and those smaller than 15 ha are kept as islands. Along about a kilometre of the middle basin's south shore the wash is too faint to find, so a shoreline is drawn there by hand (`SHORES`).
+- **Parks** are the ground between streets with no lot lines: less than 7% black ink over 40 m.
+- **Public buildings** are compact patches of dense hatching, squared off where they are nearly rectangular.
+- **Labels** are the names lettered on the plan, placed by hand (`LABELS`).
+
+```sh
+uv run python mapstyle.py        # writes preview/public/data/styled/<plan>/
+```
+
+Open `/styled.html` on the preview server.
+A slider fades the original drawing in over the map, and a checkbox puts today's satellite image beneath the streets.
+
 ### What goes wrong
 
 - **Streets that follow the contours.** Where a designer ran a street along a hillside within a few metres of a contour, the script takes the street's edge for the contour and loses it. Griffin's and Comey's terraced streets suffer most.

@@ -13,6 +13,7 @@
 - Traced the streets of ten plans as centrelines with widths (`history/georef/vectorise.py`), into `output/streets-1912.gpkg` and the preview.
   The survey's contours are removed line by line (near and parallel), so street edges survive where contours cross them; Bérard's pale streets are found with a top-hat filter.
   These are automatic first drafts: good on flat ground (Comey's is nearly complete), weaker on steep ground, and fooled by hatching, faint lot lines and railways.
+- Drew No. 10 as a modern street map in the manner of Google Maps (`history/georef/mapstyle.py`, `preview/styled.html`): roads classed by traced width, water from the plan's blue shore wash, parks from the absence of lot lines, buildings from hatching, and the plan's own place names.
 
 ## Next
 

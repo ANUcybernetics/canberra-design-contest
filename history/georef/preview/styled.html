@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Canberra As Designed</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/src/style.css">
+    <style>
+        body { background: #e6eedf; font-family: Roboto, 'Helvetica Neue', Arial, sans-serif; }
+        .card {
+            position: absolute; top: 12px; left: 12px; width: 300px; max-width: calc(100vw - 48px);
+            background: #fff; color: #202124; border-radius: 8px; padding: 14px 16px;
+            box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
+        }
+        .card h1 { font-size: 16px; font-weight: 500; margin: 0 0 4px; }
+        .card .sub { color: #5f6368; font-size: 13px; margin: 0 0 10px; }
+        .card .row { font-size: 13px; color: #3c4043; }
+        .legend { display: grid; grid-template-columns: 34px 1fr; gap: 4px 8px; align-items: center; font-size: 12px; color: #5f6368; margin-top: 10px; }
+        .sw { height: 10px; border-radius: 2px; }
+        .card .note { color: #80868b; font-size: 11px; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <aside class="card">
+        <h1 id="title">Canberra, as designed</h1>
+        <p class="sub" id="subtitle"></p>
+        <label class="row"><span>Original plan</span><input id="plan-opacity" type="range" min="0" max="1" step="0.05" value="0"></label>
+        <label class="row"><input id="satellite" type="checkbox"> Canberra today, beneath</label>
+        <div class="legend">
+            <div class="sw" style="background:#fde293;border:2px solid #f1c24f"></div><div>Boulevard, over 40 m</div>
+            <div class="sw" style="background:#fff;border:2px solid #c5c9cf;height:8px"></div><div>Avenue, 28–40 m</div>
+            <div class="sw" style="background:#fff;border:1px solid #d3d6db;height:6px"></div><div>Street, 16–28 m</div>
+            <div class="sw" style="background:#fff;border:1px solid #dfe1e5;height:3px"></div><div>Lane</div>
+            <div class="sw" style="background:#c8e6c4"></div><div>Park or garden</div>
+            <div class="sw" style="background:#aadaff"></div><div>Water</div>
+            <div class="sw" style="background:#dedbd7"></div><div>Public building</div>
+        </div>
+        <p class="note">Streets traced automatically from the 1911 competition drawing, and classed by their traced width; parks, water and buildings read from the drawing's lot lines, colour wash and hatching. Names as lettered on the plan. A first draft, not checked by hand.</p>
+    </aside>
+    <script type="module" src="/src/styled.js"></script>
+</body>
+</html>

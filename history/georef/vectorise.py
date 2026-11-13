@@ -71,7 +71,8 @@ EXCLUDE = [(689900, 6094100, 691700, 6095200), (695000, 6094380, 696300, 6095200
 SETTINGS = {
     # Bérard's own cartouche reaches further down the sheet.
     "design-37-berard": {"mode": "bands", "band_max_m": 80.0, "exclude": [(689900, 6093400, 691750, 6095200)]},
-    "design-10-griffiths-coulter-caswell": {"colour": True},
+    # The "Reference" key to the numbered buildings, bottom left.
+    "design-10-griffiths-coulter-caswell": {"colour": True, "exclude": [(690050, 6089600, 690560, 6091260)]},
     # Saarinen's "Explanatory notes" legend, right of the plan.
     "design-18-saarinen": {"exclude": [(695750, 6092900, 696550, 6094300)]},
     # A photograph of the original, at lower resolution than the lithograph
