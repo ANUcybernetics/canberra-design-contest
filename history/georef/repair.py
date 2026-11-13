@@ -203,6 +203,7 @@ class Plan:
 
     def __init__(self, name):
         CACHE.mkdir(parents=True, exist_ok=True)
+        self.name = name
         path = CACHE / f"{name}-design.png"
         with rasterio.open(OUT / f"{name}-mga55.tif") as src:
             self.tr, self.px = src.transform, src.res[0]
@@ -228,15 +229,35 @@ class Plan:
         r, c = self.rc(xy)
         return self.clear[r, c]
 
-    def parallel_hit(self, p, d, normal, reach):
-        """Is there a drawn line, parallel to d, within reach along normal?"""
-        for t in np.arange(1.0, reach, self.px * 0.7):
-            r, c = self.rc(p + t * normal)
-            if self.design[r[0], c[0]]:
-                th = self.theta[r[0], c[0]] + np.pi / 2  # gradient -> line direction
-                ang = abs(np.arctan2(d[1], d[0]) - th) % np.pi
-                return min(ang, np.pi - ang) < np.radians(25)
-        return False
+    def line_dir(self, r, c):
+        """Direction of the drawn line at a pixel, as a map (east, north) unit vector.
+
+        The structure tensor gives the gradient's angle in image axes, where y
+        runs down; the line is at right angles to it, and north is up.
+        """
+        th = self.theta[r, c] + np.pi / 2
+        return np.array([np.cos(th), -np.sin(th)])
+
+    def passable(self, p, q):
+        """Can a street run straight from p to q?  Not if a long drawn line
+        (a block's edge) crosses the way; lettering's short strokes are allowed."""
+        L = np.hypot(*(q - p))
+        if L < 1:
+            return True
+        u = (q - p) / L
+        pts = p + np.outer(np.arange(0, L, self.px * 0.7), u)
+        r, c = self.rc(pts)
+        ink = self.design[r, c]
+        if ink.mean() > 0.35:
+            return False
+        for k in np.nonzero(ink)[0]:
+            d = self.line_dir(r[k], c[k])
+            if abs(d @ u) > np.cos(np.radians(55)):
+                continue  # runs along the way, not across it
+            far = [self.rc(pts[k] + s * 6.0 * d) for s in (-1, 1)]
+            if all(self.design[rr[0], cc[0]] for rr, cc in far):
+                return False
+        return True
 
 
 # ---------------------------------------------------------------- 1. avenues
@@ -360,11 +381,19 @@ def axis_of(pts, width):
 # ---------------------------------------------------------------- 2. wide roads
 
 
-def wide_nowhere(net, plan, log, min_score=0.4):
+def wide_nowhere(net, plan, log):
+    """Drop wide roads that still go nowhere once cut streets are joined.
+
+    A skeleton runs parallel to whatever bounds it, so drawn lines on either
+    side prove little; the test is topological.  A run of wide road that ends
+    in a dead end and joins the network at most once, after every gap that
+    could be bridged has been, is open ground: a park, a block's interior, the
+    margin beside a single line.  Short stubby dead ends go the same way.
+    """
     adj = net.adj()
     deg = {n: len(v) for n, v in adj.items()}
     wide = {i for i, e in net.edges.items() if e["w"] >= WIDE_M}
-    seen, dropped, kept = set(), 0, 0
+    seen, dropped, record = set(), 0, []
     for start in wide:
         if start in seen:
             continue
@@ -381,30 +410,25 @@ def wide_nowhere(net, plan, log, min_score=0.4):
         inner = {n: sum(1 for j in adj[n] if j in run) for n in nodes}
         dead = [n for n in nodes if deg[n] == 1]
         attach = [n for n in nodes if deg[n] > inner[n]]
-        if not dead or len(attach) > 1:
-            continue
-        # Walk the run: drawn lines parallel on both sides?
-        hits = total = 0
-        for i in run:
-            e = net.edges[i]
-            c = resample(e["coords"], 8.0)
-            reach = 0.75 * e["w"] + 8
-            for k in range(1, len(c) - 1):
-                d = c[k + 1] - c[k - 1]
-                d /= np.hypot(*d) or 1
-                nrm = np.array([-d[1], d[0]])
-                total += 1
-                hits += plan.parallel_hit(c[k], d, nrm, reach) and plan.parallel_hit(c[k], d, -nrm, reach)
-        score = hits / total if total else 0
-        if score < min_score:
+        if dead and len(attach) <= 1 and not any(net.edges[i].get("median") for i in run):
+            mid = net.edges[next(iter(run))]["coords"]
+            record.append({"E": float(mid[len(mid) // 2][0]), "N": float(mid[len(mid) // 2][1])})
             for i in run:
                 del net.edges[i]
             dropped += 1
-        else:
-            kept += 1
+    # Stubs: a dead-end edge shorter than two and a half times its width.
+    adj = net.adj()
+    stubs = [
+        i
+        for i, e in net.edges.items()
+        if (len(adj[e["a"]]) == 1) != (len(adj[e["b"]]) == 1) and arclen(e["coords"])[-1] < 2.5 * e["w"] and not e.get("median")
+    ]
+    for i in stubs:
+        del net.edges[i]
     for n in [n for n, v in net.adj().items() if not v]:
         del net.nodes[n]
-    log(f"  wide roads going nowhere: {dropped} dropped, {kept} kept (drawn lines on both sides)")
+    (CACHE / f"{plan.name}-wide.json").write_text(json.dumps(record))
+    log(f"  wide roads still going nowhere: {dropped} dropped; {len(stubs)} stubs dropped")
     return dropped
 
 
@@ -663,6 +687,236 @@ def fit_strokes(net, plan, log):
     return fitted
 
 
+# ---------------------------------------------------------------- 5. cut streets
+
+JOIN_M = 60.0  # longest gap bridged
+
+
+def split_edge(net, i, q):
+    """Split edge i at the point of it nearest q; return the new node."""
+    e = net.edges.pop(i)
+    c = e["coords"]
+    line = LineString(c)
+    s = line.project(Point(q))
+    cum = arclen(c)
+    k = int(np.searchsorted(cum, s))
+    m = net.add_node(np.asarray(line.interpolate(s).coords[0]))
+    tags = {k2: v for k2, v in e.items() if k2 not in ("a", "b", "coords", "w")}
+    first = np.vstack([c[:k], net.nodes[m]])
+    second = np.vstack([net.nodes[m], c[k:]])
+    if len(first) >= 2:
+        net.add_edge(e["a"], m, first, e["w"], **tags)
+    if len(second) >= 2:
+        net.add_edge(m, e["b"], second, e["w"], **tags)
+    return m
+
+
+def join_cuts(net, plan, log):
+    adj = net.adj()
+    dead = [n for n, v in adj.items() if len(v) == 1 and net.edges[v[0]]["a"] != net.edges[v[0]]["b"]]
+    if len(dead) < 2:
+        return 0
+    out = {n: -end_ray(net.oriented(adj[n][0], n), 0, 30)[1] for n in dead}
+    width = {n: net.edges[adj[n][0]]["w"] for n in dead}
+    cos = np.cos(np.radians(35))
+    used, joined, teed = set(), 0, 0
+    # Dead ends facing each other across a gap.
+    pos = np.array([net.nodes[n] for n in dead])
+    pairs = []
+    for i, j in cKDTree(pos).query_pairs(JOIN_M):
+        a, b = dead[i], dead[j]
+        v = net.nodes[b] - net.nodes[a]
+        d = np.hypot(*v)
+        if d >= 1 and out[a] @ (v / d) > cos and out[b] @ (-v / d) > cos:
+            pairs.append((d, a, b))
+    for d, a, b in sorted(pairs):
+        if a in used or b in used or not plan.passable(net.nodes[a], net.nodes[b]):
+            continue
+        net.add_edge(a, b, np.linspace(net.nodes[a], net.nodes[b], max(2, int(d / STEP_M) + 1)), min(width[a], width[b]), src="joined")
+        used |= {a, b}
+        joined += 1
+    # A dead end that runs into a street: carry it on to make a junction.
+    lines = net.lines()
+    ids = list(lines)
+    tree = STRtree([lines[i] for i in ids])
+    split = set()
+    for n in dead:
+        if n in used:
+            continue
+        p0 = net.nodes[n]
+        reach = min(JOIN_M, 1.5 * width[n] + 15)
+        ray = LineString([p0 + out[n], p0 + out[n] * reach])
+        best = None
+        for k in tree.query(ray):
+            i = ids[k]
+            if i in split or i not in net.edges or n in (net.edges[i]["a"], net.edges[i]["b"]):
+                continue
+            hit = ray.intersection(lines[i])
+            for q in getattr(hit, "geoms", [hit]):
+                if q.geom_type == "Point":
+                    dd = Point(p0).distance(q)
+                    if best is None or dd < best[0]:
+                        best = (dd, i, np.asarray(q.coords[0]))
+        if best is None:
+            continue
+        dd, i, q = best
+        if not plan.passable(p0, q):
+            continue
+        m = split_edge(net, i, q)
+        split.add(i)
+        net.add_edge(n, m, np.linspace(p0, net.nodes[m], max(2, int(dd / STEP_M) + 1)), width[n], src="joined")
+        used.add(n)
+        teed += 1
+    net.sync()
+    log(f"  cut streets: {joined} gaps joined, {teed} dead ends carried on to a street")
+    return joined + teed
+
+
+# ---------------------------------------------------------------- 6. classes
+
+ORDER = ["lane", "street", "avenue", "boulevard"]
+LINK_M = 1200.0  # pieces of main road this close along the streets are linked
+MAIN_SHARE = 0.14  # main roads (avenues and boulevards) as a share of the network's length
+
+
+def classify(net, log):
+    """Class each street by its part in the network, one class to a street.
+
+    A street (a stroke: edges running on through junctions) takes one class
+    along its whole length, from its width, its length, and its betweenness
+    (how many shortest routes across the city use it).  Main roads must form
+    a network: a stretch of avenue that joins no other main road is demoted,
+    and main-road networks within reach of each other are linked.
+    """
+    import networkx as nx
+
+    G = nx.Graph()
+    for i, e in net.edges.items():
+        L = arclen(e["coords"])[-1]
+        if e["a"] != e["b"] and (not G.has_edge(e["a"], e["b"]) or G[e["a"]][e["b"]]["L"] > L):
+            G.add_edge(e["a"], e["b"], L=L, i=i)
+    bc = nx.edge_betweenness_centrality(G, k=min(400, G.number_of_nodes()), weight="L", seed=1)
+    btw = {d["i"]: bc.get((a, b), bc.get((b, a), 0)) for a, b, d in G.edges(data=True)}
+    adj = net.adj()
+    chains = strokes(net)
+    info = []
+    for chain in chains:
+        ids = [i for i, _, _ in chain]
+        Ls = np.array([arclen(net.edges[i]["coords"])[-1] for i in ids])
+        ws = np.array([net.edges[i]["w"] for i in ids])
+        order = np.argsort(ws)
+        w = float(ws[order][np.searchsorted(np.cumsum(Ls[order]), Ls.sum() / 2)])
+        b = float(np.average([btw.get(i, 0) for i in ids], weights=Ls))
+        ends = {chain[0][1], chain[-1][2]}
+        info.append(
+            {
+                "ids": ids,
+                "L": float(Ls.sum()),
+                "w": w,
+                "b": b,
+                "dead": any(len(adj[n]) == 1 for n in ends),
+                "median": any(net.edges[i].get("median") for i in ids),
+            }
+        )
+    bs = np.array([s["b"] for s in info])
+    # Widths relative to the plan's own: the lithographs draw streets narrower
+    # than No. 10's original, so fixed thresholds would find no main roads.
+    ws_all = np.array([s["w"] for s in info])
+    Ls_all = np.array([s["L"] for s in info])
+    order = np.argsort(ws_all)
+    cum = np.cumsum(Ls_all[order]) / Ls_all.sum()
+
+    def wq(q):
+        return float(ws_all[order][min(np.searchsorted(cum, q), len(order) - 1)])
+
+    w25, w97 = wq(0.25), wq(0.97)
+    # Score each street by the part it plays (betweenness) and its width, both
+    # as ranks within the plan; the best-scoring streets are the main roads,
+    # until they make up MAIN_SHARE of the network's length.
+    for s in info:
+        s["pct"] = float((bs < s["b"]).mean())
+        s["pw"] = float(cum[np.searchsorted(ws_all[order], s["w"], side="left") - 1]) if s["w"] > ws_all.min() else 0.0
+        s["score"] = 0.6 * s["pct"] + 0.4 * s["pw"]
+    total, main = Ls_all.sum(), 0.0
+    for s in sorted(info, key=lambda s: -s["score"]):
+        s["main"] = main < MAIN_SHARE * total and s["L"] >= 150 and not (s["dead"] and s["L"] < 300)
+        if s["main"]:
+            main += s["L"]
+    for s in info:
+        L, w, pct = s["L"], s["w"], s["pct"]
+        if s["median"] or (s["main"] and w >= max(40, w97) and L >= 400):
+            cls = "boulevard"
+        elif s["main"]:
+            cls = "avenue"
+        elif w < w25 and pct < 0.5:
+            cls = "lane"
+        else:
+            cls = "street"
+        if s["dead"] and L < 80:
+            cls = "lane"
+        s["cls"] = cls
+        for i in s["ids"]:
+            net.edges[i]["class"] = cls
+
+    # Main roads form a network: grow the largest main network one link at a
+    # time, along the shortest street route to the nearest other piece of main
+    # road, until none is within reach; then demote the short pieces left over.
+    def main_pieces():
+        M = nx.Graph()
+        for e in net.edges.values():
+            if e.get("class") in ("avenue", "boulevard"):
+                M.add_edge(e["a"], e["b"], L=arclen(e["coords"])[-1])
+        return sorted(
+            ((sum(d["L"] for *_, d in M.subgraph(c).edges(data=True)), set(c)) for c in nx.connected_components(M)),
+            key=lambda t: -t[0],
+        )
+
+    linked = 0
+    for _ in range(200):
+        pieces = main_pieces()
+        if len(pieces) < 2:
+            break
+        core = pieces[0][1]
+        rest = set().union(*(c for L, c in pieces[1:] if L >= 300))
+        if not rest:
+            break
+        dist, path = nx.multi_source_dijkstra(G, core, weight="L", cutoff=LINK_M)
+        hit = [(dist[n], n) for n in rest if n in dist]
+        if not hit:
+            break
+        _, n = min(hit)
+        for a, b in itertools.pairwise(path[n]):
+            i = G[a][b]["i"]
+            if net.edges[i].get("class") not in ("avenue", "boulevard"):
+                net.edges[i]["class"] = "avenue"
+                linked += 1
+    demoted = 0
+    for L, c in main_pieces()[1:]:
+        if L < 600:
+            for e in net.edges.values():
+                if e["a"] in c and e["b"] in c and e.get("class") in ("avenue", "boulevard") and not e.get("median"):
+                    e["class"] = "street"
+                    demoted += 1
+    # One class to a street: a stroke takes the class of most of its length.
+    for s in info:
+        tally = {}
+        for i in s["ids"]:
+            tally[net.edges[i]["class"]] = tally.get(net.edges[i]["class"], 0) + arclen(net.edges[i]["coords"])[-1]
+        top = max(tally, key=tally.get)
+        if tally[top] >= 0.6 * s["L"]:
+            for i in s["ids"]:
+                net.edges[i]["class"] = top
+    km = {c: 0.0 for c in ORDER}
+    for e in net.edges.values():
+        km[e.get("class", "lane")] += arclen(e["coords"])[-1] / 1000
+    pieces = main_pieces()
+    log(
+        f"  classes: {', '.join(f'{c} {km[c]:.0f} km' for c in reversed(ORDER))}; {linked} edges promoted to link main roads, "
+        f"{demoted} isolated main-road edges demoted; main network in {len(pieces)} pieces, the largest {pieces[0][0] / 1000:.1f} km"
+    )
+    return km
+
+
 # ---------------------------------------------------------------- measures
 
 
@@ -694,7 +948,7 @@ def write(net, name):
         if len(c) < 2 or arclen(c)[-1] < 1:
             continue
         props = {"design": name, "width_m": round(e["w"], 1), "length_m": round(float(arclen(c)[-1]), 1), "source": e.get("src", "traced")}
-        for k in ("fit", "median", "islands"):
+        for k in ("fit", "median", "islands", "class"):
             if k in e:
                 props[k] = e[k]
         feats.append({"type": "Feature", "geometry": {"type": "LineString", "coordinates": np.round(c, 2).tolist()}, "properties": props})
@@ -719,11 +973,16 @@ def run(name):
     plan = Plan(name)
     steps = {
         "avenues": avenues(net, log),
-        "wide_dropped": wide_nowhere(net, plan, log),
         "links_merged": merge_links(net, log),
         "junctions_moved": place_junctions(net, log),
+        "strokes_fitted": len(fit_strokes(net, plan, log)),
+        "cuts_joined": join_cuts(net, plan, log),
+        "wide_dropped": wide_nowhere(net, plan, log),
     }
-    steps["strokes_fitted"] = len(fit_strokes(net, plan, log))
+    # Joins and drops change junctions: settle them, and refit.
+    steps["links_merged"] += merge_links(net, log)
+    steps["strokes_refitted"] = len(fit_strokes(net, plan, log))
+    steps["classes_km"] = {k: round(v, 1) for k, v in classify(net, log).items()}
     after = measures(net)
     write(net, name)
     log(f"  before: {before}")

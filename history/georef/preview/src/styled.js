@@ -18,7 +18,7 @@ const FONT = ['Open Sans Semibold'];
 const ROADS = [
     ['lane', 14, '#dfe1e5', '#ffffff', [14, 0.6, 16, 3, 18, 9, 20, 30]],
     ['street', 12, '#d3d6db', '#ffffff', [12, 0.7, 14, 1.8, 16, 6, 18, 17, 20, 60]],
-    ['avenue', 11, '#c5c9cf', '#ffffff', [11, 1, 13, 2.4, 16, 9, 18, 26, 20, 95]],
+    ['avenue', 11, '#ecc65a', '#fff3c4', [11, 1, 13, 2.4, 16, 9, 18, 26, 20, 95]],
     ['boulevard', 10, '#f1c24f', '#fde293', [10, 1.2, 12, 2.8, 16, 12, 18, 36, 20, 130]],
 ];
 const widths = (stops, extra = 0) => ['interpolate', ['exponential', 1.6], ['zoom'], ...stops.map((v, i) => (i % 2 ? v + extra : v))];
@@ -32,7 +32,7 @@ const sources = {
         attribution: 'Imagery © <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics, and the GIS User Community',
     },
 };
-for (const k of ['extent', 'landuse', 'water', 'buildings', 'roads', 'labels']) {
+for (const k of ['extent', 'landuse', 'water', 'buildings', 'roads', 'labels', 'railways', 'bridges', 'pois']) {
     sources[k] = { type: 'geojson', data: `${DATA}/${k}.geojson` };
 }
 sources.roads.attribution = 'Streets traced from the 1911 competition drawings, <a href="https://nla.gov.au/">National Library of Australia</a>';
@@ -62,6 +62,51 @@ roadLayers.push({
     layout: { 'line-cap': 'butt', 'line-join': 'round' },
     paint: { 'line-color': '#a8d5a2', 'line-width': widths([14, 1, 16, 4, 18, 12, 20, 44]) },
 });
+
+// Bridges: the road again, over the water, with a darker edge.
+const bridgeLayers = [];
+for (const [cls, minzoom, , fill] of ROADS) {
+    const stops = ROADS.find((r) => r[0] === cls)[4];
+    bridgeLayers.push(
+        {
+            id: `bridge-${cls}-casing`, type: 'line', source: 'bridges', minzoom,
+            filter: ['all', ['==', ['get', 'kind'], 'road'], ['==', ['get', 'class'], cls]],
+            layout: { 'line-cap': 'butt' }, paint: { 'line-color': '#9aa0a6', 'line-width': widths(stops, 3) },
+        },
+        {
+            id: `bridge-${cls}-fill`, type: 'line', source: 'bridges', minzoom,
+            filter: ['all', ['==', ['get', 'kind'], 'road'], ['==', ['get', 'class'], cls]],
+            layout: { 'line-cap': 'butt' }, paint: { 'line-color': fill, 'line-width': widths(stops) },
+        },
+    );
+}
+
+// The railway: a grey line with white ties, in the Google manner.
+const railWidth = (k) => ['interpolate', ['linear'], ['zoom'], 11, 1 * k, 15, 2.5 * k, 18, 4 * k];
+const railLayers = [
+    { id: 'rail-bridge', type: 'line', source: 'bridges', filter: ['==', ['get', 'kind'], 'rail'], paint: { 'line-color': '#80868b', 'line-width': railWidth(3) } },
+    { id: 'rail', type: 'line', source: 'railways', paint: { 'line-color': '#8a8f96', 'line-width': railWidth(1.4) } },
+    {
+        id: 'rail-ties', type: 'line', source: 'railways', minzoom: 13,
+        paint: { 'line-color': '#ffffff', 'line-width': railWidth(0.7), 'line-dasharray': [2, 3] },
+    },
+];
+
+// Named public buildings: a small dot and the name from the plan's key.
+const poiLayers = [
+    {
+        id: 'poi', type: 'circle', source: 'pois', minzoom: 14,
+        paint: { 'circle-radius': 4, 'circle-color': ['match', ['get', 'kind'], 'station', '#5f6368', 'hotel', '#e8710a', '#7b61c9'], 'circle-stroke-color': '#fff', 'circle-stroke-width': 1.5 },
+    },
+    {
+        id: 'poi-label', type: 'symbol', source: 'pois', minzoom: 14.5,
+        layout: {
+            'text-field': ['get', 'name'], 'text-font': FONT, 'text-size': 11.5, 'text-anchor': 'top', 'text-offset': [0, 0.6],
+            'text-max-width': 9, 'text-optional': true,
+        },
+        paint: { 'text-color': ['match', ['get', 'kind'], 'hotel', '#b45309', '#5b4bab'], 'text-halo-color': '#ffffff', 'text-halo-width': 1.4 },
+    },
+];
 
 const label = (kind, colour, halo, size) => ({
     id: `label-${kind}`, type: 'symbol', source: 'labels', filter: ['==', ['get', 'kind'], kind],
@@ -96,9 +141,12 @@ const map = new maplibregl.Map({
                 paint: { 'fill-color': '#dedbd7', 'fill-outline-color': '#cbc8c3', 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0, 15, 1] },
             },
             ...roadLayers,
+            ...bridgeLayers,
+            ...railLayers,
             label('water', '#3a78c2', '#e3f2ff', 13),
             label('park', '#2f7a3b', '#f2fbf0', 12),
             label('place', '#5f6368', '#ffffff', 12),
+            ...poiLayers,
         ],
     },
 });

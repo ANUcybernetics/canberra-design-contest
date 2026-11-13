@@ -30,9 +30,11 @@ import numpy as np
 import rasterio
 from rasterio.features import rasterize, shapes
 from rasterio.warp import transform_geom
-from shapely.geometry import LineString, mapping, shape
+from shapely.geometry import LineString, Point, mapping, shape
+from shapely.ops import unary_union
 from skimage.morphology import remove_small_holes, remove_small_objects
 
+from readings import KEY, LABELS, LETTERED, NOT_BUILDINGS, NUMBERED, RAILWAYS, SHORES
 from sheets import HERE
 from vectorise import EXCLUDE, STREETS, cfg, disk
 from warp_plans import OUT
@@ -47,57 +49,6 @@ PARK_INK = 0.07  # lot lines make a block's ink denser than this, over 40 m
 # Road classes by traced width (m).  The traced width runs from line centre
 # to line centre, so it is a little more than the carriageway.
 CLASSES = [("lane", 0, 16), ("street", 16, 28), ("avenue", 28, 40), ("boulevard", 40, 999)]
-
-# Names lettered on No. 10, as (text, kind, E, N) in MGA55, read off the
-# warped plan.  kind: park, water, place.
-LABELS = {
-    "design-10-griffiths-coulter-caswell": [
-        ("Recreation Ground", "park", 692797, 6094474),
-        ("Gardens", "park", 692544, 6094012),
-        ("Aeroplane and Military Parade Reserve", "place", 694425, 6094077),
-        ("Botanical and Acclimatization Gardens", "park", 694606, 6092628),
-        ("Park", "park", 695587, 6092700),
-        ("Park", "park", 695765, 6092127),
-        ("Spillway", "place", 690988, 6093000),
-        ("Dam", "place", 690862, 6092127),
-        ("Island", "place", 691893, 6092632),
-        ("Island", "place", 694933, 6090791),
-        ("Molonglo River", "water", 693884, 6092271),
-        ("Molonglo River", "water", 691603, 6092300),
-        ("Park and Gardens", "park", 693449, 6091910),
-        ("Park and Garden", "park", 691784, 6091982),
-        ("University Grounds", "park", 692761, 6091512),
-        ("Park", "park", 693177, 6090827),
-        ("Park", "park", 691567, 6090791),
-        ("Golf Links", "park", 695837, 6090610),
-        ("Show Ground", "park", 695257, 6091331),
-        ("Baths", "place", 694987, 6090267),
-        ("Cricket Ground", "park", 695366, 6089805),
-        ("Stadium", "park", 695113, 6089624),
-        ("Racecourse", "park", 695729, 6089443),
-        ("Football Ground", "park", 695095, 6089335),
-        ("Railway Station", "place", 694244, 6090248),
-    ],
-}
-
-
-# Shorelines drawn by hand where the plan's blue wash fades, as MGA55
-# polylines.  No. 10: the south shore of the middle basin, along the railway
-# embankment, carries only a faint wash for about a kilometre.
-SHORES = {
-    "design-10-griffiths-coulter-caswell": [
-        [
-            (693129, 6092200),
-            (693214, 6092214),
-            (693443, 6092236),
-            (693657, 6092243),
-            (693871, 6092240),
-            (694043, 6092171),
-            (694200, 6092057),
-            (694314, 6091971),
-        ],
-    ],
-}
 
 
 def to_wgs84(geom):
@@ -169,17 +120,27 @@ def roads(name, repaired=True):
     for f in json.loads(path.read_text())["features"]:
         p = f["properties"]
         w = p["width_m"]
-        cls = road_class(w)
+        cls = p.get("class") or road_class(w)  # repair.py classes by the network
         if p.get("median") == "planted":
             cls = "boulevard"  # an avenue with a planted median is the grandest street there is
-        src.append({"coords": f["geometry"]["coordinates"], "width": w, "class": cls, "length": p["length_m"], "median": p.get("median")})
-    demote_short([r for r in src if not r["median"]], "boulevard", "avenue", 400)
+        src.append(
+            {
+                "coords": f["geometry"]["coordinates"],
+                "width": w,
+                "class": cls,
+                "length": p["length_m"],
+                "median": p.get("median"),
+                "networked": "class" in p,
+            }
+        )
+    demote_short([r for r in src if not r["median"] and not r["networked"]], "boulevard", "avenue", 400)
     feats, lines = [], []
     for r in src:
         # Fitted streets are already smooth; Chaikin only rounds what was traced.
         geom = LineString(chaikin(r["coords"]))
         lines.append((geom, r["width"]))
         props = {"class": r["class"], "width_m": r["width"]}
+        lines[-1] = (geom, r["width"], r["class"])
         if r["median"]:
             props["median"] = r["median"]
         feats.append({"type": "Feature", "geometry": to_wgs84(mapping(geom)), "properties": props})
@@ -279,11 +240,35 @@ def run(name):
 
     inner = cv2.erode(live.astype(np.uint8), disk(80 / RES)) > 0
     wet = water(rgb, live, inner, SHORES.get(name, []), tr) if c["colour"] else np.zeros((h, w), bool)
-    write(name, "water", [{"type": "Feature", "geometry": to_wgs84(mapping(g)), "properties": {}} for g in polygons(wet, tr, 20000)])
+    lakes = polygons(wet, tr, 20000)
+    write(name, "water", [{"type": "Feature", "geometry": to_wgs84(mapping(g)), "properties": {}} for g in lakes])
+
+    # The railway, as read off the plan, and bridges wherever a road or the
+    # railway crosses water.
+    rails = {kind: LineString(chaikin(pts, 3)) for kind, pts in RAILWAYS.get(name, {}).items()}
+    write(name, "railways", [{"type": "Feature", "geometry": to_wgs84(mapping(g)), "properties": {"kind": k}} for k, g in rails.items()])
+    water_all = unary_union(lakes) if lakes else None
+    bridges = []
+    if water_all is not None:
+        for g, wd, cls in lines:
+            for part in getattr(g.intersection(water_all), "geoms", [g.intersection(water_all)]):
+                if part.geom_type == "LineString" and part.length >= 15:
+                    bridges.append(
+                        {
+                            "type": "Feature",
+                            "geometry": to_wgs84(mapping(part)),
+                            "properties": {"class": cls, "width_m": wd, "kind": "road"},
+                        }
+                    )
+        for k, g in rails.items():
+            for part in getattr(g.intersection(water_all), "geoms", [g.intersection(water_all)]):
+                if part.geom_type == "LineString" and part.length >= 15:
+                    bridges.append({"type": "Feature", "geometry": to_wgs84(mapping(part)), "properties": {"kind": "rail"}})
+    write(name, "bridges", bridges)
 
     # Road area, and the extent of the city: everywhere within reach of a street.
-    road_area = rasterize(((g.buffer(wd / 2, cap_style="flat"), 1) for g, wd in lines), out_shape=(h, w), transform=tr) > 0
-    near = rasterize(((g.buffer(90), 1) for g, _ in lines), out_shape=(h, w), transform=tr) > 0
+    road_area = rasterize(((g.buffer(wd / 2, cap_style="flat"), 1) for g, wd, _ in lines), out_shape=(h, w), transform=tr) > 0
+    near = rasterize(((g.buffer(90), 1) for g, *_ in lines), out_shape=(h, w), transform=tr) > 0
     extent = cv2.morphologyEx(near.astype(np.uint8), cv2.MORPH_CLOSE, disk(150 / RES)) > 0
     extent = cv2.erode(extent.astype(np.uint8), disk(60 / RES)) > 0
     blocks = extent & live & ~road_area & ~wet
@@ -300,7 +285,26 @@ def run(name):
         rect = g.minimum_rotated_rectangle
         g = rect if g.area / rect.area > 0.72 else g.buffer(3, join_style="mitre").buffer(-3, join_style="mitre").simplify(2)
         bld.append(g)
-    write(name, "buildings", [{"type": "Feature", "geometry": to_wgs84(mapping(g)), "properties": {}} for g in bld])
+    # Drop what was read as lettering or bridges, and name what the key names.
+    nots = [Point(p) for p in NOT_BUILDINGS.get(name, [])]
+    bld = [g for g in bld if not any(g.distance(p) < 10 for p in nots)]
+    props = [{} for _ in bld]
+    named = [(f"{n}", KEY[name][n], "public", e, nn) for n, e, nn in NUMBERED.get(name, [])]
+    named += [("", t, t.lower(), e, nn) for t, e, nn in LETTERED.get(name, [])]
+    poi = []
+    for num, title, kind, e, nn in named:
+        p = Point(e, nn)
+        dists = [g.distance(p) for g in bld]
+        if dists and min(dists) < 30:
+            k = int(np.argmin(dists))
+            if not props[k]:
+                props[k] = {"name": title, "number": num, "kind": kind}
+                c = bld[k].representative_point()
+                poi.append(
+                    {"type": "Feature", "geometry": to_wgs84(mapping(c)), "properties": {"name": title, "number": num, "kind": kind}}
+                )
+    write(name, "buildings", [{"type": "Feature", "geometry": to_wgs84(mapping(g)), "properties": pr} for g, pr in zip(bld, props)])
+    write(name, "pois", poi)
 
     # Parks carry no lot lines, so little ink; measured over 40 m, away from
     # the streets' own edge lines.

@@ -14,12 +14,15 @@
   The survey's contours are removed line by line (near and parallel), so street edges survive where contours cross them; Bérard's pale streets are found with a top-hat filter.
   These are automatic first drafts: good on flat ground (Comey's is nearly complete), weaker on steep ground, and fooled by hatching, faint lot lines and railways.
 - Repaired the traced street networks (`history/georef/repair.py`): planted avenues collapsed from ladders of loops to single centrelines, wide roads to nowhere dropped unless drawn lines run along both sides, split crossroads merged, and streets refitted as straight lines and arcs checked against the plan's ink.
-  Turning per kilometre, a measure of wiggle, fell by 50–70% on every plan; cut streets are not yet joined.
+  Turning per kilometre, a measure of wiggle, fell by 50–70% on every plan.
+- Gave the networks real connectivity (`repair.py`): cut streets joined where two dead ends face each other or one points at a street, wide roads that still go nowhere dropped, and every street classed whole by width, length and betweenness, with the main roads grown into a connected network.
+- Added the railway, bridges and named public buildings to No. 10's styled map: the railway traced by eye, bridges where roads and rail cross water, and 44 of the 53 buildings in the plan's key named by reading their numbers (`history/georef/readings.py`).
 - Drew No. 10 as a modern street map in the manner of Google Maps (`history/georef/mapstyle.py`, `preview/styled.html`): roads classed by traced width, water from the plan's blue shore wash, parks from the absence of lot lines, buildings from hatching, and the plan's own place names.
 
 ## Next
 
-- Join cut streets: propose joins between facing dead ends and have a vision model judge each one against the plan (designed, not yet built; it costs API spend, so agree a budget first).
+- Judge the harder joins (gaps over 60 m, joins across junctions) with a vision model against the plan (designed, not yet built; it costs API spend, so agree a budget first).
+- Trace the railways and name the buildings of the other plans the way No. 10's were.
 - Correct the street drafts by hand in QGIS, starting with the six shortlisted designs; mark edited features `source = "hand"`.
 - Consider teaching the street tracer to recognise hatching (Saarinen) and railways, or train a small segmentation model on the corrected drafts.
 - Next NLA visit: get and scan the items in `history/nla-visit-list.md`, starting with Bérard's streets plan and Gimson's plan.

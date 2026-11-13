@@ -194,26 +194,28 @@ Run it alongside the first with `pnpm dev --port 5182` and open `/streets.html`;
 ### Repairing the networks
 
 `repair.py` mends the traced networks and writes `output/streets/<plan>-repaired.geojson`, plus a `<plan>-repaired` layer in `output/streets-1912.gpkg`.
-Each feature records what was done to it: `source` is `traced` or `avenue`, and `fit` is `line` or `arc` where a street was refitted.
+Each feature records what was done to it: `source` is `traced`, `avenue` or `joined`; `fit` is `line` or `arc` where a street was refitted; and `class` is its place in the network.
 Every step is plain geometry, checked against the plan's own ink, and the whole run takes under a minute a plan.
 
 1. **Avenues.** An avenue with a planted median is traced as a ladder of small loops, one round each island. Chains of loops under 3,000 m² that are at least three times as long as they are wide become a single centreline, fitted as a line or arc through the islands, with the avenue's full width and `median: planted`; the side streets are carried to it.
-2. **Wide roads that go nowhere.** A run of road 35 m or wider that ends in a dead end and joins the network at most once is usually open ground beside a single line. The script walks along it every 8 m, looking for a drawn line *parallel to it* on both sides, and drops the run if fewer than 40% of the stations find both.
-3. **Junctions.** A skeleton splits a crossroads into two junctions joined by a short link. Links shorter than the widest street there are merged, unless (for links over half that width) the streets either side fail to line up, which marks a staggered junction. Each junction then moves to the point nearest the straight lines of the streets that meet there, measured beyond the stretch the junction distorts.
-4. **Strokes.** Edges that run on through a junction, turning less than 25°, are chained into the street the designer drew, and each chain is refitted as a straight line or circular arc. A fit must stay within 1.5 m RMS (or 8% of the width) of the trace, and keep at least a third of its half-width clear of the plan's linework along 90% of its length; otherwise the chain is split at a junction and its halves tried again. A straight line is preferred unless an arc fits much better. Junctions then move to where the fitted streets cross.
+2. **Junctions.** A skeleton splits a crossroads into two junctions joined by a short link. Links shorter than the widest street there are merged, unless (for links over half that width) the streets either side fail to line up, which marks a staggered junction. Each junction then moves to the point nearest the straight lines of the streets that meet there, measured beyond the stretch the junction distorts.
+3. **Strokes.** Edges that run on through a junction, turning less than 25°, are chained into the street the designer drew, and each chain is refitted as a straight line or circular arc. A fit must stay within 1.5 m RMS (or 8% of the width) of the trace, and keep at least a third of its half-width clear of the plan's linework along 90% of its length; otherwise the chain is split at a junction and its halves tried again. A straight line is preferred unless an arc fits much better. Junctions then move to where the fitted streets cross.
+4. **Cut streets.** Two dead ends facing each other (within 35°) across up to 60 m are joined; a dead end that points at a street within reach is carried on to meet it. A join is refused where a long drawn line, a block's edge, crosses its way; the short strokes of lettering are allowed.
+5. **Wide roads that go nowhere.** Once every cut that can be joined has been, a run of road 35 m or wider that still ends in a dead end and joins the network at most once is open ground (a park, a block's interior, the margin beside a single line) and is dropped, as are stubby dead ends shorter than two and a half times their width. A skeleton runs parallel to whatever bounds it, so drawn lines on either side prove nothing; the test has to be about connections.
+6. **Classes by the network.** Each street (a stroke) takes one class along its whole length, from its width, its length and its betweenness: the share of shortest routes across the city that use it. Planted avenues are boulevards; long wide streets, or long busy ones, are avenues; short dead ends are lanes. Then the main roads are made a network: the largest piece of main road grows, one link at a time, along the shortest street route to the nearest other piece within 1.2 km, and pieces of main road shorter than 600 m that join nothing are demoted to streets.
 
 | Plan | Turning (°/km), before → after | Junctions | Dead ends |
 | --- | --- | --- | --- |
-| No. 4 Agache (3rd) | 912 → 438 | 669 → 574 | 2418 → 2043 |
-| No. 7 Magonigle (commended) | 828 → 308 | 1335 → 994 | 1337 → 1198 |
-| No. 10 Griffiths, Coulter & Caswell (minority 1st) | 752 → 289 | 1354 → 964 | 1106 → 1014 |
-| No. 18 Saarinen (2nd) | 835 → 331 | 1261 → 1020 | 1960 → 1808 |
-| No. 29 Griffin (1st), copy A | 663 → 254 | 1013 → 798 | 1444 → 1285 |
-| No. 29 Griffin (1st), copy B | 783 → 244 | 836 → 688 | 1482 → 1344 |
-| No. 35 Schanfelberg, Rees & Gummer (commended) | 886 → 384 | 656 → 562 | 2350 → 2193 |
-| No. 37 Bérard | 1117 → 347 | 446 → 377 | 1185 → 1050 |
-| No. 41 Comey (minority 2nd) | 747 → 289 | 1362 → 1082 | 1580 → 1395 |
-| No. 81 Gellerstedt (minority 3rd) | 903 → 411 | 883 → 770 | 2503 → 2272 |
+| No. 4 Agache (3rd) | 912 → 399 | 669 → 510 | 2418 → 1686 |
+| No. 7 Magonigle (commended) | 828 → 266 | 1335 → 925 | 1337 → 872 |
+| No. 10 Griffiths, Coulter & Caswell (minority 1st) | 752 → 264 | 1354 → 926 | 1106 → 778 |
+| No. 18 Saarinen (2nd) | 835 → 289 | 1261 → 956 | 1960 → 1532 |
+| No. 29 Griffin (1st), copy A | 663 → 219 | 1013 → 737 | 1444 → 1055 |
+| No. 29 Griffin (1st), copy B | 783 → 212 | 836 → 647 | 1482 → 1097 |
+| No. 35 Schanfelberg, Rees & Gummer (commended) | 886 → 346 | 656 → 501 | 2350 → 1922 |
+| No. 37 Bérard | 1117 → 307 | 446 → 339 | 1185 → 880 |
+| No. 41 Comey (minority 2nd) | 747 → 255 | 1362 → 984 | 1580 → 1132 |
+| No. 81 Gellerstedt (minority 3rd) | 903 → 369 | 883 → 744 | 2503 → 1918 |
 
 "Turning" is the total change of direction along the streets per kilometre, a measure of wiggle; a ruled street scores nothing.
 The full figures are in `gcps/plans/repair.json`.
@@ -228,7 +230,7 @@ The preview uses the repaired streets, and the styled map has a checkbox to show
 
 What it does not yet do:
 
-- **Join cut streets.** A street broken by lettering or a lost line stays broken; this is the step the plan sets aside for a vision model to judge.
+- **Judge the hard joins.** Joins are made only where the geometry is plain; gaps longer than 60 m, or across junctions, are left for a vision model to judge against the plan (designed, not built).
 - **Tell a crossing from a turn.** Where two different streets meet at a shallow angle, chaining can join them into one stroke and fit a curve across the junction (seen once on Griffin's plan, across the railway).
 - **Clear false lanes.** Strips between faint lot lines, and Griffin's lanes between paired blocks, are left as they are.
 
@@ -237,11 +239,16 @@ What it does not yet do:
 `mapstyle.py` turns a traced plan into the layers of a modern street map, and `preview/styled.html` draws them in the manner of Google Maps.
 It is done for No. 10, the only plan with a colour wash and lettered names to work from; `?plan=<id>` shows another design's streets in the same style, without water or labels.
 
-- **Roads** are smoothed and classed by their traced width: boulevards over 40 m (in yellow), avenues of 28–40 m, streets of 16–28 m and lanes. A run of boulevard shorter than 400 m in all is taken for open ground beside a street and drawn as an avenue.
-- **Water** is whatever the designers' blue shore wash encloses. The wash lies on the water side of every shore, so gaps of up to 180 m in it are bridged, the pieces it then encloses are filled, and those smaller than 15 ha are kept as islands. Along about a kilometre of the middle basin's south shore the wash is too faint to find, so a shoreline is drawn there by hand (`SHORES`).
+- **Roads** come from the repaired network and keep the classes `repair.py` gives them by their place in the network: avenues with planted medians (drawn with a green strip), boulevards and avenues in yellow as Google draws main roads, then streets and lanes. A plan not yet repaired is classed by traced width alone.
+- **The railway** is traced by eye from the plan (`readings.py`): the main line from the north edge past the northern station, round the west basin, over the Steel Bridge, south-east to the main station and on towards Yass, and the branch past the platform. Its paired lines are broken too often by contours and lettering to be found automatically.
+- **Bridges** are wherever a road or the railway crosses the water, drawn again over it with a darker edge.
+- **Water** is whatever the designers' blue shore wash encloses. The wash lies on the water side of every shore, so gaps of up to 180 m in it are bridged, the pieces it then encloses are filled, and those smaller than 15 ha are kept as islands. Along about a kilometre of the middle basin's south shore the wash is too faint to find, so a shoreline is drawn there by hand (`SHORES` in `readings.py`).
 - **Parks** are the ground between streets with no lot lines: less than 7% black ink over 40 m.
-- **Public buildings** are compact patches of dense hatching, squared off where they are nearly rectangular.
+- **Public buildings** are compact patches of dense hatching, squared off where they are nearly rectangular. Patches that are really large lettering (BOTANICAL, FOOTBALL ...) or bridges are dropped (`NOT_BUILDINGS`). 44 of the 53 buildings in the plan's "Reference" key are named, from the Houses of Parliament on Camp Hill (No. 1) to the Museum by the lake (No. 52), by reading the number in a circle beside each; stations and hotels are named from the plan's lettering.
 - **Labels** are the names lettered on the plan, placed by hand (`LABELS`).
+
+Everything read off the plan by eye, rather than detected, is kept together in `readings.py`: the labels, the hand-drawn shoreline, the railway, the building key and where each numbered building stands, and the lettering that is not a building.
+It was read from crops drawn with a labelled MGA55 grid, and is good to about ten metres.
 
 ```sh
 uv run python mapstyle.py        # writes preview/public/data/styled/<plan>/

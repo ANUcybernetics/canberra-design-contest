@@ -3,6 +3,7 @@ name = "georef-1910"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
+    "networkx>=3.6.1",
     "numpy>=2.4.6",
     "opencv-python-headless>=5.0.0.93",
     "pillow>=13.0.0",

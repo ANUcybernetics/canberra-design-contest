@@ -8,18 +8,26 @@
       "turning_deg_per_km": 752.0
     },
     "after": {
-      "edges": 3662,
-      "km": 281.6,
-      "dead_ends": 1014,
-      "junctions": 964,
-      "turning_deg_per_km": 289.0
+      "edges": 3587,
+      "km": 277.0,
+      "dead_ends": 778,
+      "junctions": 926,
+      "turning_deg_per_km": 264.0
     },
     "steps": {
       "avenues": 13,
-      "wide_dropped": 67,
-      "links_merged": 274,
-      "junctions_moved": 933,
-      "strokes_fitted": 2191
+      "links_merged": 377,
+      "junctions_moved": 946,
+      "strokes_fitted": 2259,
+      "cuts_joined": 149,
+      "wide_dropped": 66,
+      "strokes_refitted": 1925,
+      "classes_km": {
+        "lane": 39.1,
+        "street": 199.1,
+        "avenue": 34.9,
+        "boulevard": 4.5
+      }
     }
   },
   "design-29-griffin-copyB": {
@@ -31,18 +39,26 @@
       "turning_deg_per_km": 783.0
     },
     "after": {
-      "edges": 3510,
-      "km": 273.7,
-      "dead_ends": 1344,
-      "junctions": 688,
-      "turning_deg_per_km": 244.0
+      "edges": 3320,
+      "km": 259.5,
+      "dead_ends": 1097,
+      "junctions": 647,
+      "turning_deg_per_km": 212.0
     },
     "steps": {
       "avenues": 0,
-      "wide_dropped": 139,
-      "links_merged": 138,
-      "junctions_moved": 677,
-      "strokes_fitted": 2211
+      "links_merged": 170,
+      "junctions_moved": 686,
+      "strokes_fitted": 2365,
+      "cuts_joined": 94,
+      "wide_dropped": 157,
+      "strokes_refitted": 1861,
+      "classes_km": {
+        "lane": 37.3,
+        "street": 187.0,
+        "avenue": 35.7,
+        "boulevard": 0.0
+      }
     }
   },
   "design-04-agache-sewerage": {
@@ -54,18 +70,26 @@
       "turning_deg_per_km": 912.0
     },
     "after": {
-      "edges": 4489,
-      "km": 269.9,
-      "dead_ends": 2043,
-      "junctions": 574,
-      "turning_deg_per_km": 438.0
+      "edges": 4111,
+      "km": 243.1,
+      "dead_ends": 1686,
+      "junctions": 510,
+      "turning_deg_per_km": 399.0
     },
     "steps": {
       "avenues": 0,
-      "wide_dropped": 302,
-      "links_merged": 76,
-      "junctions_moved": 550,
-      "strokes_fitted": 2959
+      "links_merged": 101,
+      "junctions_moved": 565,
+      "strokes_fitted": 3279,
+      "cuts_joined": 144,
+      "wide_dropped": 339,
+      "strokes_refitted": 2504,
+      "classes_km": {
+        "lane": 57.3,
+        "street": 169.0,
+        "avenue": 16.8,
+        "boulevard": 0.7
+      }
     }
   },
   "design-07-magonigle": {
@@ -77,18 +101,26 @@
       "turning_deg_per_km": 828.0
     },
     "after": {
-      "edges": 4658,
-      "km": 265.4,
-      "dead_ends": 1198,
-      "junctions": 994,
-      "turning_deg_per_km": 308.0
+      "edges": 4441,
+      "km": 251.9,
+      "dead_ends": 872,
+      "junctions": 925,
+      "turning_deg_per_km": 266.0
     },
     "steps": {
       "avenues": 1,
-      "wide_dropped": 126,
-      "links_merged": 320,
-      "junctions_moved": 963,
-      "strokes_fitted": 2837
+      "links_merged": 369,
+      "junctions_moved": 977,
+      "strokes_fitted": 2964,
+      "cuts_joined": 116,
+      "wide_dropped": 145,
+      "strokes_refitted": 2389,
+      "classes_km": {
+        "lane": 57.9,
+        "street": 164.8,
+        "avenue": 28.9,
+        "boulevard": 1.1
+      }
     }
   },
   "design-18-saarinen": {
@@ -100,18 +132,26 @@
       "turning_deg_per_km": 835.0
     },
     "after": {
-      "edges": 5484,
-      "km": 303.1,
-      "dead_ends": 1808,
-      "junctions": 1020,
-      "turning_deg_per_km": 331.0
+      "edges": 5283,
+      "km": 292.7,
+      "dead_ends": 1532,
+      "junctions": 956,
+      "turning_deg_per_km": 289.0
     },
     "steps": {
       "avenues": 3,
-      "wide_dropped": 116,
-      "links_merged": 209,
-      "junctions_moved": 978,
-      "strokes_fitted": 3471
+      "links_merged": 267,
+      "junctions_moved": 993,
+      "strokes_fitted": 3593,
+      "cuts_joined": 129,
+      "wide_dropped": 123,
+      "strokes_refitted": 3044,
+      "classes_km": {
+        "lane": 53.1,
+        "street": 215.3,
+        "avenue": 23.8,
+        "boulevard": 1.5
+      }
     }
   },
   "design-29-griffin-copyA": {
@@ -123,18 +163,26 @@
       "turning_deg_per_km": 663.0
     },
     "after": {
-      "edges": 3931,
-      "km": 289.8,
-      "dead_ends": 1285,
-      "junctions": 798,
-      "turning_deg_per_km": 254.0
+      "edges": 3694,
+      "km": 274.0,
+      "dead_ends": 1055,
+      "junctions": 737,
+      "turning_deg_per_km": 219.0
     },
     "steps": {
       "avenues": 0,
-      "wide_dropped": 141,
-      "links_merged": 206,
-      "junctions_moved": 788,
-      "strokes_fitted": 2492
+      "links_merged": 239,
+      "junctions_moved": 796,
+      "strokes_fitted": 2648,
+      "cuts_joined": 81,
+      "wide_dropped": 161,
+      "strokes_refitted": 2134,
+      "classes_km": {
+        "lane": 36.1,
+        "street": 204.3,
+        "avenue": 34.0,
+        "boulevard": 0.0
+      }
     }
   },
   "design-35-schanfelberg-rees-gummer": {
@@ -146,18 +194,26 @@
       "turning_deg_per_km": 886.0
     },
     "after": {
-      "edges": 4469,
-      "km": 249.8,
-      "dead_ends": 2193,
-      "junctions": 562,
-      "turning_deg_per_km": 384.0
+      "edges": 4194,
+      "km": 228.7,
+      "dead_ends": 1922,
+      "junctions": 501,
+      "turning_deg_per_km": 346.0
     },
     "steps": {
       "avenues": 3,
-      "wide_dropped": 120,
-      "links_merged": 73,
-      "junctions_moved": 547,
-      "strokes_fitted": 2885
+      "links_merged": 89,
+      "junctions_moved": 554,
+      "strokes_fitted": 3002,
+      "cuts_joined": 95,
+      "wide_dropped": 137,
+      "strokes_refitted": 2470,
+      "classes_km": {
+        "lane": 61.9,
+        "street": 156.2,
+        "avenue": 11.2,
+        "boulevard": 0.3
+      }
     }
   },
   "design-37-berard": {
@@ -169,18 +225,26 @@
       "turning_deg_per_km": 1117.0
     },
     "after": {
-      "edges": 2519,
-      "km": 142.3,
-      "dead_ends": 1050,
-      "junctions": 377,
-      "turning_deg_per_km": 347.0
+      "edges": 2262,
+      "km": 129.0,
+      "dead_ends": 880,
+      "junctions": 339,
+      "turning_deg_per_km": 307.0
     },
     "steps": {
       "avenues": 0,
-      "wide_dropped": 133,
-      "links_merged": 64,
-      "junctions_moved": 371,
-      "strokes_fitted": 1617
+      "links_merged": 80,
+      "junctions_moved": 376,
+      "strokes_fitted": 1780,
+      "cuts_joined": 57,
+      "wide_dropped": 149,
+      "strokes_refitted": 1350,
+      "classes_km": {
+        "lane": 30.2,
+        "street": 85.7,
+        "avenue": 13.4,
+        "boulevard": 0.0
+      }
     }
   },
   "design-41-comey": {
@@ -192,18 +256,26 @@
       "turning_deg_per_km": 747.0
     },
     "after": {
-      "edges": 4551,
-      "km": 297.2,
-      "dead_ends": 1395,
-      "junctions": 1082,
-      "turning_deg_per_km": 289.0
+      "edges": 4422,
+      "km": 290.4,
+      "dead_ends": 1132,
+      "junctions": 984,
+      "turning_deg_per_km": 255.0
     },
     "steps": {
       "avenues": 1,
+      "links_merged": 351,
+      "junctions_moved": 1067,
+      "strokes_fitted": 3078,
+      "cuts_joined": 128,
       "wide_dropped": 165,
-      "links_merged": 250,
-      "junctions_moved": 1046,
-      "strokes_fitted": 2927
+      "strokes_refitted": 2538,
+      "classes_km": {
+        "lane": 48.7,
+        "street": 209.1,
+        "avenue": 33.0,
+        "boulevard": 0.3
+      }
     }
   },
   "design-81-gellerstedt": {
@@ -215,18 +287,26 @@
       "turning_deg_per_km": 903.0
     },
     "after": {
-      "edges": 5403,
-      "km": 313.3,
-      "dead_ends": 2272,
-      "junctions": 770,
-      "turning_deg_per_km": 411.0
+      "edges": 5186,
+      "km": 298.9,
+      "dead_ends": 1918,
+      "junctions": 744,
+      "turning_deg_per_km": 369.0
     },
     "steps": {
       "avenues": 1,
-      "wide_dropped": 186,
-      "links_merged": 88,
-      "junctions_moved": 741,
-      "strokes_fitted": 3448
+      "links_merged": 116,
+      "junctions_moved": 759,
+      "strokes_fitted": 3641,
+      "cuts_joined": 161,
+      "wide_dropped": 201,
+      "strokes_refitted": 3007,
+      "classes_km": {
+        "lane": 66.8,
+        "street": 214.6,
+        "avenue": 18.5,
+        "boulevard": 0.0
+      }
     }
   }
 }
