@@ -13,3 +13,11 @@ dependencies = [
     "shapely>=2.2.0",
     "skan>=0.13.1",
 ]
+
+[tool.ruff]
+line-length = 140
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "UP", "I", "SIM", "C4", "PIE", "RET"]
+# zip() over arrays built to the same length; strict= would only add noise.
+ignore = ["B905"]

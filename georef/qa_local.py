@@ -13,8 +13,8 @@ import sys
 
 import numpy as np
 
-from plans import PLANS
 from paths import COMPOSITE, PLAN_COGS, PLAN_GCP_DIR
+from plans import PLANS
 from warp_plans import TMP, edges
 
 RES = 2.0

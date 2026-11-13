@@ -1,23 +1,24 @@
 """Turn a traced plan into the layers of a modern street map.
 
-Reads the street centrelines from vectorise.py and the warped plan, and
-writes WGS84 GeoJSON for the "styled" preview page
-(demos/georef-preview/public/data/styled/<plan>/):
+Reads the street centrelines from vectorise.py and repair.py, the warped plan
+and what was read off it by eye (readings.py), and writes WGS84 GeoJSON for
+the preview's styled page (demos/georef-preview/public/data/styled/<plan>/):
 
-- roads.geojson: the centrelines, smoothed, each given a class by its traced
-  width (boulevard, avenue, street, lane).
-- water.geojson: water, found from the blue wash the designers laid along
-  the water side of every shore.  Areas the wash encloses are water unless
-  they are as pale as the land (islands).
-- landuse.geojson: the blocks between the streets, as "park" where the block
-  carries no lot lines and "urban" where it does.
-- buildings.geojson: public buildings, found as compact patches of dense
-  hatching.
-- labels.geojson: the names lettered on the plan (LABELS below), placed by
-  hand from the warped plan.
+- roads: the repaired centrelines, smoothed, keeping the class repair.py gave
+  each street by its place in the network; a plan not yet repaired is classed
+  by traced width alone (CLASSES).  roads-raw: the same, as first traced.
+- railways: the railway, traced by eye.  bridges: wherever a road or the
+  railway crosses the water.
+- water: whatever the designers' blue shore wash encloses, less the islands.
+- buildings: public buildings, found as compact patches of dense hatching,
+  named from the plan's key.  pois: a point for each named building.
+- landuse: the blocks between the streets, as "park" where the block carries
+  no lot lines and "urban" where it does.  extent: the city, everywhere within
+  reach of a street.
+- labels: the names lettered on the plan, placed by hand.
 
-Only No. 10 has a colour wash and labels so far; for other plans the water
-and labels are skipped.
+Only No. 10 has a colour wash and readings so far; for other plans the water,
+railway, buildings and labels are skipped.
 
 Usage: uv run python mapstyle.py [plan]
 """
@@ -34,8 +35,8 @@ from shapely.geometry import LineString, Point, mapping, shape
 from shapely.ops import unary_union
 from skimage.morphology import remove_small_holes, remove_small_objects
 
-from readings import KEY, LABELS, LETTERED, NOT_BUILDINGS, NUMBERED, RAILWAYS, SHORES
 from paths import PLAN_COGS, STREETS, WEB_DATA
+from readings import KEY, LABELS, LETTERED, NOT_BUILDINGS, NUMBERED, RAILWAYS, SHORES
 from vectorise import EXCLUDE, cfg, disk
 
 WEB = WEB_DATA / "styled"
@@ -259,7 +260,7 @@ def run(name):
                             "properties": {"class": cls, "width_m": wd, "kind": "road"},
                         }
                     )
-        for k, g in rails.items():
+        for g in rails.values():
             for part in getattr(g.intersection(water_all), "geoms", [g.intersection(water_all)]):
                 if part.geom_type == "LineString" and part.length >= 15:
                     bridges.append({"type": "Feature", "geometry": to_wgs84(mapping(part)), "properties": {"kind": "rail"}})

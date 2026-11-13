@@ -282,7 +282,7 @@ def detect(name: str) -> dict:
     dbg = gray.convert("RGB")
     d = ImageDraw.Draw(dbg)
     rad = max(8, int(0.012 * gray.width))
-    for (W, S, x, y), r in zip(pts, res):
+    for (_, _, x, y), r in zip(pts, res):
         col = (0, 150, 255) if r <= BEND_PX else (255, 40, 40)
         d.ellipse([x - rad, y - rad, x + rad, y + rad], outline=col, width=max(3, rad // 4))
     sc = 1600 / max(dbg.size)

@@ -32,6 +32,7 @@ Usage: uv run python vectorise.py [--tile E0 N0 E1 N1] [plan ...]
 
 import argparse
 import json
+import subprocess
 import sys
 
 import cv2
@@ -39,12 +40,14 @@ import numpy as np
 import rasterio
 from rasterio.warp import Resampling, reproject
 from rasterio.windows import from_bounds
+from scipy.ndimage import distance_transform_edt, gaussian_filter
+from scipy.spatial import cKDTree
 from shapely.geometry import LineString, mapping
 from skan import Skeleton
 from skimage.morphology import remove_small_holes, remove_small_objects, skeletonize
 
-from plans import PLANS
 from paths import COMPOSITE, PLAN_COGS, PLAN_GCP_DIR, ROOT, STREETS, STREETS_GPKG, WORK
+from plans import PLANS
 
 DEBUG = WORK / "debug" / "streets"
 EPSG = 7855
@@ -177,7 +180,6 @@ def wander(survey, plan, px_m, block_m=240, step_m=120):
     if not good.any():
         return np.zeros((h, w), np.float32), np.zeros((h, w), np.float32), stats
     # Fill the gaps from the nearest good block, then smooth.
-    from scipy.ndimage import distance_transform_edt, gaussian_filter
 
     idx = distance_transform_edt(~good, return_distances=False, return_indices=True)
     dx, dy = dx[tuple(idx)], dy[tuple(idx)]
@@ -219,8 +221,6 @@ def survey_like(plan_skel, survey_skel, px_m, tol_m, max_deg=25.0):
     A designer's line that crosses a contour keeps its pixels at the crossing,
     because the two run at an angle.
     """
-    from scipy.ndimage import distance_transform_edt
-
     dist, (iy, ix) = distance_transform_edt(~survey_skel, return_indices=True)
     near = plan_skel & (dist * px_m <= tol_m)
     tp = orientation(plan_skel)
@@ -280,7 +280,6 @@ def link_ends(design, px_m, max_m=12.0, max_angle=30.0):
         n = np.hypot(*v)
         dirs.append(v / n if n > 0 else v)
     dirs = np.array(dirs)
-    from scipy.spatial import cKDTree
 
     tree = cKDTree(ends)
     cos = np.cos(np.radians(max_angle))
@@ -350,9 +349,8 @@ def free_space(rgb, survey_rgb, px_m, c, log):
     for x0, y0, x1, y1 in lines:
         cv2.line(canvas, (int(x0), int(y0)), (int(x1), int(y1)), 1, th)
     design = canvas > 0
-    log(
-        f"  {along.sum() / max(ink_skel.sum(), 1):.0%} of the ink runs along the survey; mended with {len(links)} links and {len(lines)} straight runs"
-    )
+    share = along.sum() / max(ink_skel.sum(), 1)
+    log(f"  {share:.0%} of the ink runs along the survey; mended with {len(links)} links and {len(lines)} straight runs")
     design = cv2.morphologyEx(design.astype(np.uint8), cv2.MORPH_CLOSE, disk(c["close_m"] / px_m)) > 0
     # Lettering: compact blobs, much smaller than any block outline.
     design = remove_small_objects(design, max_size=int(150 / px_m**2))
@@ -537,8 +535,6 @@ def run(name, tile=None, debug_scale=None):
 
 def package(stats):
     """One GeoPackage, a layer per design, and a summary for git."""
-    import subprocess
-
     gpkg = STREETS_GPKG
     for n in stats:
         src = STREETS / f"{n}.geojson"

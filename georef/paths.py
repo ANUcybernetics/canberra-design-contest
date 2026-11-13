@@ -1,13 +1,13 @@
 """Where the pipeline reads and writes, relative to the repository root.
 
-    history/scans/          the NLA downloads (not committed)
-    georef/                 this code
-    georef/gcps/            the control points and summaries it finds (committed)
-    georef/work/            scratch: unpacked sheets, intermediate rasters,
-                            debug overlays (not committed)
-    data/                   the GIS outputs, for QGIS (not committed)
-    demos/georef-preview/   the MapLibre preview; make_web.sh and mapstyle.py
-                            write its web copies into public/
+history/scans/          the NLA downloads (not committed)
+georef/                 this code
+georef/gcps/            the control points and summaries it finds (committed)
+georef/work/            scratch: unpacked sheets, intermediate rasters,
+                        debug overlays (not committed)
+data/                   the GIS outputs, for QGIS (not committed)
+demos/georef-preview/   the MapLibre preview; make_web.sh and mapstyle.py
+                        write its web copies into public/
 """
 
 from pathlib import Path

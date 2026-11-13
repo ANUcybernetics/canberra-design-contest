@@ -25,6 +25,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
+from PIL import Image
 
 from fit_and_warp import box_ring, helmert, write_cutline
 from paths import COMPOSITE, GCP_DIR, PLAN_COGS, PLAN_GCP_DIR, WORK
@@ -192,7 +193,6 @@ def edges(path, bounds, res=4.0):
             str(out),
         ]
     )
-    from PIL import Image
 
     Image.MAX_IMAGE_PIXELS = None
     a = np.array(Image.open(out), dtype=np.float32)

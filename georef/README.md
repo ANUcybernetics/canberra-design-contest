@@ -82,6 +82,7 @@ To look at the results over OpenStreetMap or a satellite image, start the previe
 
 It needs the GDAL command-line tools (`gdal_translate`, `gdalwarp`, `gdalbuildvrt`, `ogr2ogr`) on the path.
 Debug overlays for every step land in `work/debug/`.
+The code is kept tidy with ruff, configured in `pyproject.toml`: run `uvx ruff format . && uvx ruff check .` before committing.
 
 ## The 1912 competition plans
 

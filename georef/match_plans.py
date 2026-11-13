@@ -61,7 +61,7 @@ def load(path, longest=WORK_PX):
     return a, s, full
 
 
-def reference(ref_name, plan_px_per_m=None):
+def reference(ref_name):
     """The reference plan, in MGA, as a grey array plus its geotransform."""
     tif = PLAN_COGS / f"{ref_name}-mga55.tif"
     info = json.loads(subprocess.run(["gdalinfo", "-json", str(tif)], capture_output=True, text=True, check=True).stdout)
@@ -194,8 +194,9 @@ def match(name):
     ref, gt = reference(spec["ref"])
     H, peak, sc, rot = coarse(tgt, ref)
     print(f"{name}: coarse search: scale {sc:.3f}, rotation {rot:+.1f} deg, peak {peak:.0f} sigma")
-    # refine twice: fit a homography to the block matches, then correlate again
-    for it in range(3):
+    # Match block by block, fit a homography to the matches, and match again
+    # through it.  The matches kept are the third round's, after two refinements.
+    for _ in range(3):
         p1, p2 = fine(tgt, ref, H)
         if len(p1) < 8:
             break

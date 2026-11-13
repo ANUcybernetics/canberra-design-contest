@@ -4,6 +4,7 @@
 
 - Moved the georeferencing pipeline to the top of the repository (`georef/`), its GIS outputs to `data/` and the MapLibre preview to `demos/georef-preview/`.
   Every script now takes its paths from `georef/paths.py`.
+  Tidied the Python with ruff (configured in `georef/pyproject.toml`), and brought the stale docstrings of `repair.py` and `mapstyle.py` up to date; a clean run from the scans reproduces every committed control point.
 - Transcribed the 1912 judges' report, the 1911 conditions cover and the text of contour map Sheet 1 (`history/`).
 - Georeferenced the 1910 contour survey: all four sheets stitched into one GeoTIFF in GDA2020 / MGA zone 55 (`georef/`).
   The survey grid's origin is the Ainslie trig; nine surviving 1910 trig stations tie it to MGA at 2.8 m RMS.

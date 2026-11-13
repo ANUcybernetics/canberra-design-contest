@@ -29,7 +29,9 @@ import shutil
 import subprocess
 
 import numpy as np
+from PIL import Image
 
+from detect_grid import ink_mask
 from paths import COMPOSITE, DATA, GCP_DIR, GRID_GPKG, ROOT, WORK
 from sheets import GRID_STEP_FT, SHEET_DIR, SHEETS
 
@@ -108,10 +110,6 @@ def helmert(h, W, S):
 # ---------------------------------------------------------------- neatlines
 def detect_margins(fits):
     """Distance (ft) from the outermost grid lines out to each sheet's neatline."""
-    from PIL import Image
-
-    from detect_grid import ink_mask
-
     Image.MAX_IMAGE_PIXELS = None
     outer = {1: ("west", "north"), 2: ("east", "north"), 3: ("west", "south"), 4: ("east", "south")}
     found = {k: [] for k in ("west", "east", "north", "south")}
@@ -255,9 +253,8 @@ def main():
         s["dE"], s["dN"] = float(E - s["e"]), float(N - s["n"])
         s["resid_m"] = round(math.hypot(s["dE"], s["dN"]), 2)
         s["used"] = s["station"] not in CHECK_ONLY
-        print(
-            f"  {s['station']:15s} residual {s['resid_m']:6.2f} m  (dE {s['dE']:+6.2f}, dN {s['dN']:+6.2f}){'' if s['used'] else '  [check only]'}"
-        )
+        note = "" if s["used"] else "  [check only]"
+        print(f"  {s['station']:15s} residual {s['resid_m']:6.2f} m  (dE {s['dE']:+6.2f}, dN {s['dN']:+6.2f}){note}")
     used = [s["resid_m"] for s in stations if s["used"]]
     rms = float(np.sqrt(np.mean(np.square(used))))
     print(f"  control rms {rms:.2f} m over {len(used)} stations")

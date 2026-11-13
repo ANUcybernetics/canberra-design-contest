@@ -7,39 +7,49 @@ geometry, checked against the plan's own ink; no step asks a model.
 1. Avenues.  An avenue with a planted median is traced as a ladder of small
    loops, one round each island.  Chains of small loops become one centreline
    with the avenue's full width, and the side streets are carried to it.
-2. Wide roads that go nowhere.  A run of wide road (35 m or more) that ends
-   in a dead end and joins the network at most once is usually open ground
-   beside a single drawn line.  Walk along it and look for drawn lines
-   running parallel on *both* sides; drop the run if too few are found.
-3. Junctions.  A skeleton splits a crossroads into two junctions joined by a
-   short link, and pulls the streets sideways as they near it.  Short links
-   are merged when the streets either side line up, and each junction is
-   moved to the point nearest the straight lines of the streets that meet
-   there.
-4. Strokes.  Edges that run on through a junction (turning less than 25°)
+2. Junctions.  A skeleton splits a crossroads into two junctions joined by a
+   short link.  Short links are merged when the streets either side line up,
+   and each junction is moved to the point nearest the straight lines of the
+   streets that meet there.
+3. Strokes.  Edges that run on through a junction (turning less than 25°)
    are chained into the street the designer drew, and each is refitted as a
    straight line or a circular arc, split at junctions where one shape will
    not do.  A fit is kept only if it stays near the trace and clear of the
    plan's linework.  Junctions then sit where the fitted streets cross.
+4. Cut streets.  Two dead ends facing each other across a short gap are
+   joined, and a dead end pointing at a street is carried on to meet it,
+   unless a long drawn line crosses the way.
+5. Wide roads that go nowhere.  A run of wide road that still ends in a dead
+   end and joins the network at most once is open ground, and is dropped.
+6. Classes.  Each street takes one class along its whole length, from its
+   width, its length and its betweenness, and the main roads are grown into
+   a connected network.
+
+The joins and drops move junctions, so steps 2 and 3 run again before the
+classes are given.  The georef README gives every threshold.
 
 Usage: uv run python repair.py [plan ...]
+       uv run python repair.py --compare <plan> E,N [E,N ...]
 """
 
 import itertools
 import json
+import subprocess
 import sys
 
 import cv2
+import networkx as nx
 import numpy as np
 import rasterio
+from rasterio.windows import from_bounds
 from scipy.optimize import least_squares
 from scipy.spatial import cKDTree
 from shapely.geometry import LineString, Point
 from shapely.ops import polygonize, unary_union
 from shapely.strtree import STRtree
 
-from plans import PLANS
 from paths import PLAN_COGS, PLAN_GCP_DIR, STREETS, STREETS_GPKG, WORK
+from plans import PLANS
 from vectorise import (
     cfg,
     free_space,
@@ -445,9 +455,9 @@ def merge_links(net, log):
                 continue
             L = arclen(e["coords"])[-1]
             wmax = max(net.edges[j]["w"] for j in adj[a] + adj[b] if j != i)
-            if L > wmax:
+            if wmax < L:
                 continue
-            if L > 0.5 * wmax and not lines_up(net, i, a, b, adj):
+            if 0.5 * wmax < L and not lines_up(net, i, a, b, adj):
                 continue  # a staggered junction, really two
             del net.edges[i]
             net.nodes[a] = (net.nodes[a] + net.nodes[b]) / 2
@@ -651,7 +661,7 @@ def fit_strokes(net, plan, log):
     # Where does each node have to sit?  On every fitted street through it.
     on = {}
     for chain, prim in fitted:
-        for i, a, b in chain:
+        for _, a, b in chain:
             on.setdefault(a, []).append(prim)
             on.setdefault(b, []).append(prim)
     adj = net.adj()
@@ -661,10 +671,7 @@ def fit_strokes(net, plan, log):
         for p in prims:
             if not any(p is q for q in uniq):
                 uniq.append(p)
-        if len(uniq) == 1:
-            x = project(uniq[0], x0)
-        else:
-            x = least_squares(lambda x, uniq=uniq: [dist(p, x) for p in uniq], x0).x
+        x = project(uniq[0], x0) if len(uniq) == 1 else least_squares(lambda x, uniq=uniq: [dist(p, x) for p in uniq], x0).x
         w = max(net.edges[i]["w"] for i in adj[n]) if adj[n] else 10
         if np.hypot(*(x - x0)) < max(8.0, 0.5 * w):
             net.nodes[n] = x
@@ -786,8 +793,6 @@ def classify(net, log):
     a network: a stretch of avenue that joins no other main road is demoted,
     and main-road networks within reach of each other are linked.
     """
-    import networkx as nx
-
     G = nx.Graph()
     for i, e in net.edges.items():
         L = arclen(e["coords"])[-1]
@@ -904,7 +909,7 @@ def classify(net, log):
         if tally[top] >= 0.6 * s["L"]:
             for i in s["ids"]:
                 net.edges[i]["class"] = top
-    km = {c: 0.0 for c in ORDER}
+    km = dict.fromkeys(ORDER, 0.0)
     for e in net.edges.values():
         km[e.get("class", "lane")] += arclen(e["coords"])[-1] / 1000
     pieces = main_pieces()
@@ -997,10 +1002,9 @@ def compare(name, sites, half=130, size=520):
     After: avenues green, streets refitted as lines red, as arcs purple,
     untouched blue.  Ends of edges are dots.
     """
-    from rasterio.windows import from_bounds
 
     def feats(path):
-        return [f for f in json.loads(path.read_text())["features"]]
+        return json.loads(path.read_text())["features"]
 
     before, after = feats(STREETS / f"{name}.geojson"), feats(STREETS / f"{name}-repaired.geojson")
     src = rasterio.open(PLAN_COGS / f"{name}-mga55.tif")
@@ -1049,7 +1053,6 @@ if __name__ == "__main__":
         stats[n] = run(n)
     path.write_text(json.dumps(stats, indent=2) + "\n")
     # Repaired layers beside the traced ones in the GeoPackage.
-    import subprocess
 
     gpkg = STREETS_GPKG
     for n in names:
