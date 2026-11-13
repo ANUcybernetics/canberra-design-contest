@@ -30,6 +30,9 @@
 
 - Feed the sim from `georef/` and `data/`: steps 1 and 3 of `demos/cbrsim/PLAN.md` (the MGA55 frame and georeferencing the survey and plans) are already done there.
 
+- Try generating ground-level views of the unbuilt designs with an image model, after [Tokumin's "ground view from map arrow"](https://github.com/PicoTrex/Awesome-Nano-Banana-images/blob/main/README_en.md#case-2-generate-ground-view-from-map-arrowby-tokumin) (Nano Banana): draw a red arrow on a georeferenced plan, or on a plan laid over the 1910 survey or the modern terrain, and prompt "draw the real world view from the red circle in the direction of the arrow".
+  It would give quick street-level impressions to set beside the 3D sketch; like the vision-model joins, it costs API spend.
+
 - Judge the harder joins (gaps over 60 m, joins across junctions) with a vision model against the plan (designed, not yet built; it costs API spend, so agree a budget first).
 - Trace the railways and name the buildings of the other plans the way No. 10's were.
 - Correct the street drafts by hand in QGIS, starting with the six shortlisted designs; mark edited features `source = "hand"`.
