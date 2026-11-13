@@ -1,0 +1,17 @@
+{
+  "name": "contour-survey-1910-preview",
+  "private": true,
+  "type": "module",
+  "description": "Preview the georeferenced 1910 contour survey over OpenStreetMap",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "vite": "^8.3.4"
+  },
+  "dependencies": {
+    "geotiff": "3.0.5",
+    "maplibre-gl": "5.24.0"
+  }
+}

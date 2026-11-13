@@ -26,3 +26,9 @@ __pycache__/
 # Georeferencing working files and outputs (regenerate with history/georef)
 history/georef/work/
 history/georef/output/
+
+# Preview app: dependencies and generated web assets
+history/georef/preview/node_modules/
+history/georef/preview/dist/
+history/georef/preview/public/cog/
+history/georef/preview/public/data/

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>1910 Contour Survey</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+    <div id="map"></div>
+    <aside class="panel">
+        <h1>Contour Survey of the Site for the Federal Capital, 1910</h1>
+        <label class="row">
+            <span>Opacity</span>
+            <input id="opacity" type="range" min="0" max="1" step="0.05" value="0.85">
+        </label>
+        <label class="row"><input id="grid" type="checkbox" checked> 1910 grid (2,500 ft, from Ainslie)</label>
+        <label class="row"><input id="sheets" type="checkbox"> Sheet outlines</label>
+        <label class="row"><input id="stations" type="checkbox" checked> Control stations</label>
+        <p class="note">Press <kbd>Space</kbd> to flick the map on and off.</p>
+    </aside>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>

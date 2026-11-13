@@ -65,6 +65,18 @@ uv run python locate_stations.py
 uv run python fit_and_warp.py
 ```
 
+To look at it over OpenStreetMap, make the web copy and start the preview:
+
+```sh
+./make_web.sh            # Web Mercator COG + GeoJSON for the preview
+cd preview && pnpm install && pnpm dev
+```
+
+The preview is a small Vite and MapLibre page on port 5180.
+It reads the COG straight from the file with `src/cog.js`, the `cog://` protocol from hapmap.app, which draws Web Mercator COGs only; hence the separate EPSG:3857 copy, compressed as WebP with an alpha band.
+It has an opacity slider, toggles for the 1910 grid, sheet outlines and stations, and the space bar flicks the old map on and off.
+To reach it securely across the tailnet, `tailscale serve --bg --https=5181 http://127.0.0.1:5180`, then open `https://<host>.<tailnet>.ts.net:5181/`.
+
 It needs the GDAL command-line tools (`gdal_translate`, `gdalwarp`, `gdalbuildvrt`, `ogr2ogr`) on the path.
 Debug overlays for every step land in `work/debug/`.
 
